@@ -10,6 +10,7 @@ import com.Hospital.service.DiagnosisService;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/diagnoses")
 public class DiagnosisController {
 

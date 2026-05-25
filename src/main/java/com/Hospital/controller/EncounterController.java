@@ -11,6 +11,8 @@ import com.Hospital.service.EncounterService;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
+
 @RequestMapping("/api/encounters")
 public class EncounterController {
 

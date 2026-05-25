@@ -10,6 +10,8 @@ import com.Hospital.service.MedicationService;
 import java.util.List;  
 
 @RestController
+@CrossOrigin("*")
+
 @RequestMapping("/api/medications")
 public class MedicationController {
 

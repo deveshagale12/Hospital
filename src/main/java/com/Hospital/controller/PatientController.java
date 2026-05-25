@@ -11,6 +11,8 @@ import com.Hospital.service.PatientService;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
+
 @RequestMapping("/api/patients")
 public class PatientController {
 
