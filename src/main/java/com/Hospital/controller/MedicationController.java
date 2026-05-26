@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.Hospital.entity.Medication;
 import com.Hospital.service.MedicationService;
 
-import java.util.List;  
-
+import java.util.List;
 @RestController
-@CrossOrigin("*")
-
 @RequestMapping("/api/medications")
 public class MedicationController {
 

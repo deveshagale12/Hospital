@@ -8,7 +8,6 @@ import com.Hospital.entity.Patient;
 import com.Hospital.repo.PatientRepository;
 
 import java.util.List;
-
 @Service
 public class PatientService {
 
@@ -73,5 +72,17 @@ public class PatientService {
         Patient patient = patientRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Patient not found with Internal ID: " + id));
         patientRepository.delete(patient);
+    }
+    
+ // ── POST: Authenticate / Login Patient ─────────────────────────────────────
+    @Transactional(readOnly = true)
+    public Patient loginPatient(String email, String password) {
+        Patient patient = patientRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Authentication Failure: Invalid email credentials."));
+
+        if (!patient.getPassword().equals(password)) {
+            throw new RuntimeException("Authentication Failure: Incorrect password.");
+        }
+        return patient;
     }
 }

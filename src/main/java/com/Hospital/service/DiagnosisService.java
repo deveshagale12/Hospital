@@ -15,13 +15,11 @@ public class DiagnosisService {
     private final DiagnosisRepository diagnosisRepository;
     private final EncounterRepository encounterRepository;
 
-    // Manual Constructor Injection (No Lombok)
     public DiagnosisService(DiagnosisRepository diagnosisRepository, EncounterRepository encounterRepository) {
         this.diagnosisRepository = diagnosisRepository;
         this.encounterRepository = encounterRepository;
     }
 
-    // ── POST: Create Diagnosis and link to Encounter ─────────────────────────
     @Transactional
     public Diagnosis createDiagnosis(Long encounterId, Diagnosis diagnosis) {
         Encounter encounter = encounterRepository.findById(encounterId)
@@ -31,27 +29,23 @@ public class DiagnosisService {
         return diagnosisRepository.save(diagnosis);
     }
 
-    // ── GET: Retrieve All ────────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<Diagnosis> getAllDiagnoses() {
         return diagnosisRepository.findAll();
     }
 
-    // ── GET: Find By ID ──────────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public Diagnosis getDiagnosisById(Long id) {
         return diagnosisRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Diagnosis record not found with ID: " + id));
     }
 
-    // ── GET: Find By Encounter ID ───────────────────────────────────────────
     @Transactional(readOnly = true)
     public Diagnosis getDiagnosisByEncounterId(Long encounterId) {
         return diagnosisRepository.findByEncounterId(encounterId)
             .orElseThrow(() -> new RuntimeException("No diagnosis found for Encounter ID: " + encounterId));
     }
 
-    // ── PUT: Update Entire Diagnosis Profile ─────────────────────────────────
     @Transactional
     public Diagnosis updateDiagnosis(Long id, Diagnosis updatedDetails) {
         Diagnosis existingDiagnosis = diagnosisRepository.findById(id)
@@ -68,14 +62,18 @@ public class DiagnosisService {
         existingDiagnosis.setDiag3(updatedDetails.getDiag3());
         existingDiagnosis.setNumberDiagnoses(updatedDetails.getNumberDiagnoses());
 
+        // ── ADDED: Preserve descriptive text values ──
+        existingDiagnosis.setDiag1Desc(updatedDetails.getDiag1Desc());
+        existingDiagnosis.setDiag2Desc(updatedDetails.getDiag2Desc());
+        existingDiagnosis.setDiag3Desc(updatedDetails.getDiag3Desc());
+
         // Update Lab markers
         existingDiagnosis.setMaxGluSerum(updatedDetails.getMaxGluSerum());
         existingDiagnosis.setA1cResult(updatedDetails.getA1cResult());
 
-        return existingDiagnosis; // Hibernate commits dirty states automatically at end of transaction
+        return existingDiagnosis; 
     }
 
-    // ── DELETE: Remove Diagnosis ─────────────────────────────────────────────
     @Transactional
     public void deleteDiagnosis(Long id) {
         Diagnosis diagnosis = diagnosisRepository.findById(id)

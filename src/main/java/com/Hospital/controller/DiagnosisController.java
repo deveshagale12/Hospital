@@ -9,8 +9,8 @@ import com.Hospital.service.DiagnosisService;
 
 import java.util.List;
 
+
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/api/diagnoses")
 public class DiagnosisController {
 
@@ -48,6 +48,7 @@ public class DiagnosisController {
 
     // ── GET: Filter By Encounter ID ──────────────────────────────────────────
     // URL: GET http://localhost:8080/api/diagnoses/encounter/1
+    // Note: Used by encounter.html to load Screen 5 data dynamically
     @GetMapping("/encounter/{encounterId}")
     public ResponseEntity<Diagnosis> getDiagnosisByEncounterId(@PathVariable Long encounterId) {
         Diagnosis diagnosis = diagnosisService.getDiagnosisByEncounterId(encounterId);

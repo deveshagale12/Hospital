@@ -8,7 +8,6 @@ import jakarta.persistence.*;
  * Diabetes medication dosage information for an encounter.
  * Each drug column holds a dosage-change flag: Up / Down / Steady / No
  */
-
 @Entity
 @Table(name = "medications")
 
