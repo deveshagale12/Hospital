@@ -1,0 +1,498 @@
+1. Create Patient
+HTTP Method & Link: POST http://localhost:8080/api/patients
+
+Explanation: This is the core endpoint used to create a baseline patient record. It accepts raw patient details in the request body and calls patientService.createPatient().
+
+Database Action: Inserts a new row into the patients table. The id is auto-generated (AI PK).
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/patients \
+     -H "Content-Type: application/json" \
+     -d '{
+       "patientNbr": 8222157,
+       "fullName": "Allison Hill",
+       "email": "allison.hill@healthportal.com",
+       "password": "securePassword123",
+       "address": "123 Main Street, Pune",
+       "dob": "1995-04-15",
+       "race": "Caucasian",
+       "gender": "Female",
+       "age": "31",
+       "weight": "68kg"
+     }'
+2. Get All Patients
+HTTP Method & Link: GET http://localhost:8080/api/patients
+
+Explanation: Fetches a complete list of all patient records stored in the system. Typically used for administrative views or clinical population monitoring.
+
+Database Action: Executes a SELECT * FROM patients; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/patients \
+     -H "Accept: application/json"
+3. Get Patient by Internal ID
+HTTP Method & Link: GET http://localhost:8080/api/patients/{id} (e.g., http://localhost:8080/api/patients/1)
+
+Explanation: Looks up a single patient using their internal, auto-incremented database primary key (id).
+
+Database Action: Executes a SELECT * FROM patients WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/patients/1 \
+     -H "Accept: application/json"
+4. Get Patient by Medical Number
+HTTP Method & Link: GET http://localhost:8080/api/patients/number/{patientNbr} (e.g., http://localhost:8080/api/patients/number/8222157)
+
+Explanation: Looks up a patient using their unique operational patient identifier (patient_nbr). This is the number usually visible on user dashboards.
+
+Database Action: Executes a SELECT * FROM patients WHERE patient_nbr = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/patients/number/8222157 \
+     -H "Accept: application/json"
+5. Update Patient Details
+HTTP Method & Link: PUT http://localhost:8080/api/patients/{id} (e.g., http://localhost:8080/api/patients/1)
+
+Explanation: Updates the existing profile data or clinical demographics for a patient mapped to that specific internal database ID.
+
+Database Action: Updates column values (full_name, address, weight, etc.) for the matching row in the patients table.
+
+cURL Command:
+
+Bash
+curl -X PUT http://localhost:8080/api/patients/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "patientNbr": 8222157,
+       "fullName": "Allison Hill",
+       "email": "allison.new@healthportal.com",
+       "password": "updatedPassword123",
+       "address": "789 New Layout Blvd, Pune",
+       "dob": "1995-04-15",
+       "race": "Caucasian",
+       "gender": "Female",
+       "age": "31",
+       "weight": "66kg"
+     }'
+6. Patient Registration (Alias)
+HTTP Method & Link: POST http://localhost:8080/api/patients/register
+
+Explanation: An explicit registration endpoint that serves as an alias for the standard creation process. It passes the data through the same createPatient service logic, but provides a user-friendly path for onboarding apps.
+
+Database Action: Inserts a new row into the patients table.
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/patients/register \
+     -H "Content-Type: application/json" \
+     -d '{
+       "patientNbr": 8222158,
+       "fullName": "John Doe",
+       "email": "john.doe@healthportal.com",
+       "password": "password456",
+       "address": "456 Spine Road, Pune",
+       "dob": "1988-11-23",
+       "race": "Asian",
+       "gender": "Male",
+       "age": "37",
+       "weight": "82kg"
+     }'
+7. Secure Patient Login
+HTTP Method & Link: POST http://localhost:8080/api/patients/login
+
+Explanation: Takes an email and password via LoginRequest, verifies the credentials against the database through the service layer, and returns a tailored LoginResponse DTO containing basic details like name and ID if successful. If unauthorized, it returns a 411 Unauthorized status along with the error reason.
+
+Database Action: Validates credentials via a lookup query (SELECT * FROM patients WHERE email = ?;).
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/patients/login \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "allison.hill@healthportal.com",
+       "password": "securePassword123"
+     }'
+8. Delete Patient Record
+HTTP Method & Link: DELETE http://localhost:8080/api/patients/{id} (e.g., http://localhost:8080/api/patients/1)
+
+Explanation: Removes the specified patient completely from the database using their internal database primary key. The service layer handles wiping out all associated clinical sub-logs cascading from this user.
+
+Database Action: Executes a DELETE FROM patients WHERE id = ?; statement.
+
+cURL Command:
+
+Bash
+curl -X DELETE http://localhost:8080/api/patients/1
+
+
+=============================================================================================
+1. Create Diagnosis Linked to an Encounter
+HTTP Method & Link: POST http://localhost:8080/api/diagnoses/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Creates a complete clinical diagnosis snapshot (including ICD-9 codes, lab metrics, and medical procedures count) and establishes a one-to-one relationship with a target hospital visit using encounterId.
+
+Database Action: Inserts a new row into the diagnoses table mapping the encounter_id foreign key field. The row primary key id is auto-incremented (AI PK).
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/diagnoses/encounter/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "numLabProcedures": 42,
+       "numProcedures": 2,
+       "numMedications": 15,
+       "diag1": "428",
+       "diag1Desc": "Heart failure",
+       "diag2": "250",
+       "diag2Desc": "Diabetes mellitus",
+       "diag3": "401",
+       "diag3Desc": "Hypertension",
+       "numberDiagnoses": 6,
+       "maxGluSerum": "High",
+       "a1cResult": ">8"
+     }'
+2. Get All Diagnoses Records
+HTTP Method & Link: GET http://localhost:8080/api/diagnoses
+
+Explanation: Fetches a complete chronological master list of every single diagnostic and laboratory summary logged across the entire hospital application database.
+
+Database Action: Executes a SELECT * FROM diagnoses; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/diagnoses \
+     -H "Accept: application/json"
+3. Get Diagnosis by Internal Primary Key ID
+HTTP Method & Link: GET http://localhost:8080/api/diagnoses/{id} (e.g., /api/diagnoses/1)
+
+Explanation: Direct entry lookup used to pinpoint a single specific clinical evaluation record utilizing its standalone internal database row ID identity pointer.
+
+Database Action: Executes a SELECT * FROM diagnoses WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/diagnoses/1 \
+     -H "Accept: application/json"
+4. Get Diagnosis Filtered by Encounter ID
+HTTP Method & Link: GET http://localhost:8080/api/diagnoses/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Crucial endpoint utilized heavily by your UI elements (like encounter.html) to dynamically construct medical summary dashboards by pulling the precise diagnostic metadata attached to a specific check-in session ID.
+
+Database Action: Executes a SELECT * FROM diagnoses WHERE encounter_id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/diagnoses/encounter/1 \
+     -H "Accept: application/json"
+5. Update Existing Diagnosis Parameters
+HTTP Method & Link: PUT http://localhost:8080/api/diagnoses/{id} (e.g., /api/diagnoses/1)
+
+Explanation: Overwrites or scales metric information on an existing entry. This handles changing primary or secondary ICD-9 description strings, increasing laboratory procedure numbers, or altering metabolic HbA1c result scores.
+
+Database Action: Performs an UPDATE operation across designated column values (diag_1_desc, a1c_result, num_lab_procedures, etc.) matching the key row.
+
+cURL Command:
+
+Bash
+curl -X PUT http://localhost:8080/api/diagnoses/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "numLabProcedures": 45,
+       "numProcedures": 3,
+       "numMedications": 18,
+       "diag1": "428",
+       "diag1Desc": "Heart failure with reduced ejection fraction",
+       "diag2": "250",
+       "diag2Desc": "Diabetes mellitus type 2",
+       "diag3": "401",
+       "diag3Desc": "Essential hypertension",
+       "numberDiagnoses": 7,
+       "maxGluSerum": "Normal",
+       "a1cResult": ">7"
+     }'
+6. Delete Diagnosis Entry Record
+HTTP Method & Link: DELETE http://localhost:8080/api/diagnoses/{id} (e.g., /api/diagnoses/1)
+
+Explanation: Completely drops a specific diagnostic entry record row from the application ledger based on its database primary key.
+
+Database Action: Executes a DELETE FROM diagnoses WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X DELETE http://localhost:8080/api/diagnoses/1
+
+==========================================================================================
+Here is the complete architectural breakdown for your EncounterController. Each section maps your controller endpoints directly to your encounters database table columns, provides a detailed explanation of its function, and supplies a ready-to-use curl testing command.
+
+1. Create Encounter Linked to a Patient
+HTTP Method & Link: POST http://localhost:8080/api/encounters/patient/{patientId} (e.g., /patient/1)
+
+Explanation: Creates a fresh clinical encounter session tied to a specific patient using their database profile ID (patientId). It handles admission types, tracking source flags, stays length, and initial medicine setups.
+
+Database Action: Inserts a new row into the encounters table, automatically mapping the patient_id foreign key. The primary key id is auto-incremented (AI PK).
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/encounters/patient/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "encounterId": 10130728,
+       "admissionSourceId": 7,
+       "admissionTypeId": 1,
+       "changeFlag": "Ch",
+       "diabetesMed": "Yes",
+       "dischargeDispositionId": 1,
+       "medicalSpecialty": "Cardiology",
+       "numberEmergency": 1,
+       "numberInpatient": 0,
+       "numberOutpatient": 0,
+       "payerCode": "MC",
+       "timeInHospital": 7
+     }'
+2. Fetch All Encounter Records
+HTTP Method & Link: GET http://localhost:8080/api/encounters
+
+Explanation: Retrieves the complete unfiltered master log of every patient check-in/encounter session stored across your entire hospital network database.
+
+Database Action: Executes a SELECT * FROM encounters; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/encounters \
+     -H "Accept: application/json"
+3. Find Encounter by Primary Key ID
+HTTP Method & Link: GET http://localhost:8080/api/encounters/{id} (e.g., /api/encounters/1)
+
+Explanation: Locates a single explicit visit session by searching for its auto-incrementing database table row identifier (id).
+
+Database Action: Executes a SELECT * FROM encounters WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/encounters/1 \
+     -H "Accept: application/json"
+4. Filter All Encounters for a Specific Patient
+HTTP Method & Link: GET http://localhost:8080/api/encounters/patient/{patientId} (e.g., /patient/1)
+
+Explanation: Pulls all historical hospital visit timelines, length of stays, and admissions associated with a single patient ID. This is typically used to render the list layout seen on dashboard visit history screens.
+
+Database Action: Executes a SELECT * FROM encounters WHERE patient_id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/encounters/patient/1 \
+     -H "Accept: application/json"
+5. Update Core Metrics & Readmission Sub-Logs
+HTTP Method & Link: PUT http://localhost:8080/api/encounters/{id} (e.g., /api/encounters/1)
+
+Explanation: Modifies active clinical metadata for a hospital visit row based on its database primary key. This is useful for updating fields like time_in_hospital, medical_specialty, or changing admission/discharge tracking parameters.
+
+Database Action: Performs an UPDATE operation on designated columns for the row matching your provided id.
+
+cURL Command:
+
+Bash
+curl -X PUT http://localhost:8080/api/encounters/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "encounterId": 10130728,
+       "admissionSourceId": 7,
+       "admissionTypeId": 1,
+       "changeFlag": "No",
+       "diabetesMed": "Yes",
+       "dischargeDispositionId": 3,
+       "medicalSpecialty": "Internal Medicine",
+       "numberEmergency": 0,
+       "numberInpatient": 1,
+       "numberOutpatient": 2,
+       "payerCode": "MC",
+       "timeInHospital": 5
+     }'
+6. Hard Purge Encounter Record
+HTTP Method & Link: DELETE http://localhost:8080/api/encounters/{id} (e.g., /api/encounters/1)
+
+Explanation: Permanently drops the selected visit log entry. Because your data architecture uses cascading relationships, removing this will also wipe out any nested medications, diagnostic codes, or readmission scoring tracking logs linked directly to this internal ID.
+
+Database Action: Executes a DELETE FROM encounters WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X DELETE http://localhost:8080/api/encounters/1
+
+===========================
+
+It looks like you accidentally double-submitted the MedicationController schema! Just in case you need it cleanly formatted again alongside your exact database column structure, here is the architectural map, endpoint documentation, and complete curl commands for your Medication Domain.
+
+1. Create Medication Matrix Linked to an Encounter
+HTTP Method & Link: POST http://localhost:8080/api/medications/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Creates a complete therapeutic anti-diabetic drug matrix profile (tracking vectors like "No", "Steady", "Up", or "Down") and maps it via a 1:1 relational bind to a specific hospital check-in session using the encounterId.
+
+Database Action: Inserts a row into the medications table, matching the encounter_id foreign key. The primary key id is auto-incremented (AI PK).
+
+cURL Command:
+
+Bash
+curl -X POST http://localhost:8080/api/medications/encounter/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "acarbose": "No",
+       "acetohexamide": "No",
+       "chlorpropamide": "No",
+       "citoglipton": "No",
+       "examide": "No",
+       "glimepiride": "No",
+       "glimepiridePioglitazone": "No",
+       "glipizide": "Steady",
+       "glipizideMetformin": "No",
+       "glyburide": "Down",
+       "glyburideMetformin": "No",
+       "insulin": "Up",
+       "metformin": "Steady",
+       "metforminPioglitazone": "No",
+       "metforminRosiglitazone": "No",
+       "miglitol": "No",
+       "nateglinide": "No",
+       "pioglitazone": "No",
+       "repaglinide": "No",
+       "rosiglitazone": "No",
+       "tolazamide": "No",
+       "tolbutamide": "No",
+       "troglitazone": "No"
+     }'
+2. Fetch All Medication Matrix Records
+HTTP Method & Link: GET http://localhost:8080/api/medications
+
+Explanation: Extracts the complete chronological database sheet containing every clinical drug matrix recorded across all history streams.
+
+Database Action: Executes a SELECT * FROM medications; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/medications \
+     -H "Accept: application/json"
+3. Fetch Medication Matrix by Primary Key ID
+HTTP Method & Link: GET http://localhost:8080/api/medications/{id} (e.g., /api/medications/1)
+
+Explanation: Grabs a single row entity out of the medications table explicitly by targeting its internal identity primary key.
+
+Database Action: Executes a SELECT * FROM medications WHERE id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/medications/1 \
+     -H "Accept: application/json"
+4. Filter Medication Regimen by Encounter ID
+HTTP Method & Link: GET http://localhost:8080/api/medications/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Pulls the explicit prescription profile matrix currently attached to an active hospital visit session. This directly informs UI charts regarding what changes were introduced during a given stay.
+
+Database Action: Executes a SELECT * FROM medications WHERE encounter_id = ?; query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/medications/encounter/1 \
+     -H "Accept: application/json"
+5. Update Entire Medication Matrix
+HTTP Method & Link: PUT http://localhost:8080/api/medications/{id} (e.g., /api/medications/1)
+
+Explanation: Overwrites prescription metrics or adjustments across the 23 drug substance columns for a particular log sequence mapping to that primary key.
+
+Database Action: Performs an explicit UPDATE on the specific row matching the target id.
+
+cURL Command:
+
+Bash
+curl -X PUT http://localhost:8080/api/medications/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "acarbose": "No",
+       "acetohexamide": "No",
+       "chlorpropamide": "No",
+       "citoglipton": "No",
+       "examide": "No",
+       "glimepiride": "Steady",
+       "glimepiridePioglitazone": "No",
+       "glipizide": "Steady",
+       "glipizideMetformin": "No",
+       "glyburide": "No",
+       "glyburideMetformin": "No",
+       "insulin": "Steady",
+       "metformin": "Steady",
+       "metforminPioglitazone": "No",
+       "metforminRosiglitazone": "No",
+       "miglitol": "No",
+       "nateglinide": "No",
+       "pioglitazone": "No",
+       "repaglinide": "No",
+       "rosiglitazone": "No",
+       "tolazamide": "No",
+       "tolbutamide": "No",
+       "troglitazone": "No"
+     }'
+6. Remove Medication Record From Ledger
+HTTP Method & Link: DELETE http://localhost:8080/api/medications/{id} (e.g., /api/medications/1)
+
+Explanation: Drops the selected entry completely out of the database layout matching your primary key id.
+
+Database Action: Executes a DELETE FROM medications WHERE id = ?; statement.
+
+cURL Command:
+
+Bash
+curl -X DELETE http://localhost:8080/api/medications/1
+
+==================
+1. Fetch Readmission Details by Encounter ID
+HTTP Method & Link: GET http://localhost:8080/api/readmissions/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Retrieves clinical readmission tracking metadata, relapse causes, and predictive risk scoring calculations assigned specifically to a given hospital stay session. Your front-end dashboard screens call this to display conditional risk alert banners.
+
+Database Action: Executes a SELECT * FROM readmissions WHERE encounter_id = ?; lookup query.
+
+cURL Command:
+
+Bash
+curl -X GET http://localhost:8080/api/readmissions/encounter/1 \
+     -H "Accept: application/json"
+2. Update or Save Readmission Metrics
+HTTP Method & Link: PUT http://localhost:8080/api/readmissions/encounter/{encounterId} (e.g., /encounter/1)
+
+Explanation: Handles both creating and modifying data within your 1:1 relational child structure. It saves clinical data regarding whether a patient returned within a window context ("NO", "<30", ">30"), records their overall evaluation score, notes primary relapse variables, and flags appointment follow-up steps.
+
+Database Action: Executes an upsert code path (either an INSERT or an UPDATE statement) on columns (is_readmitted, risk_score, primary_cause, follow_up_scheduled) for the matching encounter_id mapping target.
+
+cURL Command:
+
+Bash
+curl -X PUT http://localhost:8080/api/readmissions/encounter/1 \
+     -H "Content-Type: application/json" \
+     -d '{
+       "isReadmitted": "<30",
+       "riskScore": 78,
+       "primaryCause": "Post-op Infection relapse combined with high HbA1c levels",
+       "followUpScheduled": true
+     }'
