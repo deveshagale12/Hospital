@@ -1,495 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient History - Encounters & Advanced Analytics</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brandBlue: '#0066cc',
-                        brandHover: '#0052a3',
-                        bgLight: '#f9f9f6',
-                        badgeRedBg: '#fdf2f2',
-                        badgeRedText: '#9b1c1c',
-                        badgeGreenBg: '#f3faf7',
-                        badgeGreenText: '#03543f'
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthPortal | Patient Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}:root{--bg:#f5f2ea;--ink:#182018;--muted:#60705d;--deep:#1f2a1d;--mid:#33462f;--accent:#85AB8B;--accent2:#dcefd9;--white:#fff;--line:rgba(31,42,29,.12);--danger:#b3261e;--warn:#9a6500;--shadow:0 22px 55px rgba(31,42,29,.12);--radius:28px}body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#f7f2e9,#eef6eb 48%,#fffaf2);color:var(--ink);min-height:100vh}.app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;background:var(--deep);color:#fff;padding:22px;overflow:auto}.brand{display:flex;align-items:center;gap:12px;font-weight:900;margin-bottom:24px}.logo{width:44px;height:44px;border-radius:17px;background:rgba(255,255,255,.12);display:grid;place-items:center;border:1px solid rgba(255,255,255,.18)}.patient-mini{padding:18px;border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.13);margin-bottom:18px}.patient-mini h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:27px}.patient-mini p{color:rgba(255,255,255,.65);font-size:13px;margin-top:4px}.nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:rgba(255,255,255,.72);text-align:left;padding:13px 14px;border-radius:16px;font-weight:800;cursor:pointer;transition:.2s}.nav button:hover,.nav button.active{background:rgba(255,255,255,.12);color:#fff}.logout{margin-top:18px;width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;padding:13px;border-radius:16px;font-weight:900;cursor:pointer}.main{padding:24px;overflow:hidden}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.title h1{font-family:'DM Serif Display',serif;font-size:clamp(34px,5vw,62px);font-weight:400;color:var(--deep);line-height:.95}.title p{color:var(--muted);margin-top:8px}.pill{padding:11px 15px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:900;color:var(--mid);box-shadow:0 10px 25px rgba(31,42,29,.06)}.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#243420,#536c49);color:#fff;border-radius:34px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px}.hero:before{content:"";position:absolute;inset:0;background:url('assets/dashboard-health.jpg') center/cover;opacity:.14}.hero>*{position:relative}.hero h2{font-family:'DM Serif Display',serif;font-size:44px;font-weight:400}.hero p{color:rgba(255,255,255,.75);max-width:750px;line-height:1.7;margin-top:8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}.stat{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:16px;backdrop-filter:blur(16px)}.stat b{font-size:26px;display:block}.stat span{font-size:12px;color:rgba(255,255,255,.7)}.section{display:none;animation:rise .35s ease both}.section.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:rgba(255,255,255,.76);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow);border-radius:var(--radius);padding:20px;backdrop-filter:blur(18px)}.card.full{grid-column:1/-1}.card h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:31px;color:var(--deep);margin-bottom:5px}.card .sub{color:var(--muted);font-size:14px;margin-bottom:16px}.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:900;margin:0 0 7px;color:var(--mid)}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px 13px;font:inherit;outline:none;transition:.2s}.field textarea{min-height:88px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 5px rgba(133,171,139,.15)}.full-field{grid-column:1/-1}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}.btn{border:0;background:var(--deep);color:#fff;padding:12px 15px;border-radius:15px;font-weight:900;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px);background:#30402d}.btn.light{background:#eef5ec;color:var(--deep)}.btn.danger{background:#fff1ef;color:var(--danger)}.btn.warn{background:#fff5df;color:var(--warn)}.alert{display:none;margin:0 0 16px;padding:13px 15px;border-radius:17px;font-size:14px}.alert.ok{display:block;background:#e8f6e5;color:#205529}.alert.err{display:block;background:#ffe9e6;color:var(--danger)}.list{display:grid;gap:12px;max-height:430px;overflow:auto;padding-right:4px}.item{padding:14px;border-radius:18px;background:#fff;border:1px solid var(--line)}.item-head{display:flex;justify-content:space-between;gap:10px;font-weight:900;color:var(--deep);margin-bottom:8px}.item small{color:var(--muted)}.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:13px;color:var(--muted)}.risk{height:12px;background:#e8eee4;border-radius:999px;overflow:hidden;margin:12px 0}.risk span{display:block;height:100%;background:linear-gradient(90deg,#85AB8B,#e3b04b,#d45d4c);width:0}.mobile-menu{display:none;border:0;background:var(--deep);color:#fff;padding:12px 14px;border-radius:15px;font-weight:900}.code{font-family:ui-monospace,Menlo,monospace;background:#f4f6f1;border:1px solid var(--line);padding:12px;border-radius:15px;white-space:pre-wrap;font-size:12px;color:#465342;max-height:260px;overflow:auto}@media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{display:none;position:fixed;z-index:20;inset:0 auto 0 0;width:285px}.sidebar.open{display:block}.mobile-menu{display:inline-flex}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}}@media(max-width:640px){.main{padding:15px}.top{align-items:flex-start}.form-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.hero{padding:20px}.hero h2{font-size:34px}.kv{grid-template-columns:1fr}.actions .btn{width:100%}.pill{display:none}}
+  </style>
 </head>
-<body class="bg-bgLight min-h-screen p-3 md:p-6 relative overflow-x-hidden text-gray-800">
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="logo">✚</div><span>HealthPortal</span></div>
+    <div class="patient-mini"><h3 id="sideName">Patient</h3><p>ID: <span id="sideId">-</span></p><p>No: <span id="sideNbr">-</span></p></div>
+    <nav class="nav">
+      <button class="active" onclick="showSection('overview', this)">Overview</button>
+      <button onclick="showSection('profile', this)">Patient Profile</button>
+      <button onclick="showSection('encounters', this)">Encounters</button>
+      <button onclick="showSection('diagnosis', this)">Diagnosis</button>
+      <button onclick="showSection('medications', this)">Medications</button>
+      <button onclick="showSection('readmission', this)">Readmission</button>
+    </nav>
+    <button class="logout" onclick="logout()">Logout</button>
+  </aside>
+  <main class="main">
+    <div class="top"><button class="mobile-menu" onclick="toggleMenu()">☰ Menu</button><div class="title"><h1>Patient Dashboard</h1><p>Session-wise hospital record management with API actions.</p></div><div class="pill">Connected: <span id="baseUrlText"></span></div></div>
+    <div id="message" class="alert"></div>
+    <section class="hero"><h2>Hello, <span id="heroName">Patient</span></h2><p>Manage patient profile, hospital encounters, diagnosis snapshots, medication matrix and readmission risk using your Spring Boot endpoints.</p><div class="stats"><div class="stat"><b id="statEncounters">0</b><span>Encounters</span></div><div class="stat"><b id="statRisk">-</b><span>Risk Score</span></div><div class="stat"><b id="statMed">-</b><span>Medication</span></div><div class="stat"><b id="statDiag">-</b><span>Diagnosis</span></div></div></section>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        
-        <nav class="bg-white border border-gray-200 rounded-2xl px-6 py-3.5 flex items-center justify-between shadow-xs">
-            <div class="flex items-center gap-8">
-                <div class="flex items-center gap-2 font-bold text-gray-900 tracking-tight">
-                    <span class="text-xl text-brandBlue">🖥️</span>
-                    <span>HealthPortal</span>
-                </div>
-                <div class="hidden md:flex items-center gap-1 text-xs font-semibold">
-                    <a href="patientdash.html" class="bg-blue-50 text-brandBlue px-4 py-2 rounded-xl transition-all">Home</a>
-                    <a href="visit_history.html" class="text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all">My visits</a>
-                    <a href="med.html" class="text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all">Medications</a>
-                    <a href="diagnosis.html" class="text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all">Reports</a>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-3 text-xs">
-                <div class="w-8 h-8 rounded-full bg-blue-100 text-brandBlue font-bold flex items-center justify-center">AH</div>
-                <span class="font-bold text-gray-900 hidden sm:inline">Allison Hill</span>
-            </div>
-        </nav>
+    <section id="overview" class="section active"><div class="grid"><div class="card"><h3>Session Data</h3><p class="sub">Current login data saved in browser session.</p><div id="sessionView" class="code"></div></div><div class="card"><h3>Quick Search</h3><p class="sub">Find patient by internal ID or medical number.</p><div class="form-grid"><div class="field"><label>Patient ID</label><input id="searchPatientId" placeholder="1"></div><div class="field"><label>Patient Number</label><input id="searchPatientNbr" placeholder="8222157"></div></div><div class="actions"><button class="btn" onclick="getPatientById()">Get by ID</button><button class="btn light" onclick="getPatientByNumber()">Get by Number</button><button class="btn light" onclick="loadAllPatients()">All Patients</button></div></div><div class="card full"><h3>API Result</h3><pre id="apiResult" class="code">No result yet.</pre></div></div></section>
 
-        <div id="status-toast" class="hidden p-3.5 rounded-xl text-xs font-medium text-center border transition-all duration-300"></div>
+    <section id="profile" class="section"><div class="card"><h3>Patient Profile</h3><p class="sub">Create, update or delete patient records.</p><form id="patientForm" class="form-grid"><input type="hidden" id="pId"><div class="field"><label>Patient Number</label><input id="pPatientNbr" required></div><div class="field"><label>Full Name</label><input id="pFullName" required></div><div class="field"><label>Email</label><input id="pEmail" type="email" required></div><div class="field"><label>Password</label><input id="pPassword" type="password" placeholder="Optional for update"></div><div class="field"><label>DOB</label><input id="pDob" type="date"></div><div class="field"><label>Gender</label><select id="pGender"><option>Female</option><option>Male</option><option>Other</option></select></div><div class="field full-field"><label>Address</label><input id="pAddress"></div><div class="field"><label>Race</label><input id="pRace"></div><div class="field"><label>Age</label><input id="pAge"></div><div class="field"><label>Weight</label><input id="pWeight"></div></form><div class="actions"><button class="btn" onclick="createPatient()">Create</button><button class="btn light" onclick="updatePatient()">Update</button><button class="btn danger" onclick="deletePatient()">Delete</button></div></div></section>
 
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            
-            <div class="bg-[#f4f4f0] border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div class="flex items-center gap-2.5">
-                    <div class="text-brandBlue">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                    </div>
-                    <h1 class="text-[17px] font-semibold text-gray-900 tracking-tight">Clinical Encounter History</h1>
-                </div>
-                
-                <div class="text-xs md:text-sm text-gray-600 font-normal">
-                    <span id="encounter-counter" class="font-bold text-gray-900">0 encounters</span> loaded · 
-                    <span class="font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">Patient Key: <span id="api-endpoint-id">...</span></span>
-                </div>
-            </div>
+    <section id="encounters" class="section"><div class="grid"><div class="card"><h3>Create / Update Encounter</h3><p class="sub">Linked to current patient ID.</p><form class="form-grid"><input type="hidden" id="eId"><div class="field"><label>Encounter ID</label><input id="encounterId" value="10130728"></div><div class="field"><label>Admission Source ID</label><input id="admissionSourceId" value="7"></div><div class="field"><label>Admission Type ID</label><input id="admissionTypeId" value="1"></div><div class="field"><label>Change Flag</label><select id="changeFlag"><option>Ch</option><option>No</option></select></div><div class="field"><label>Diabetes Med</label><select id="diabetesMed"><option>Yes</option><option>No</option></select></div><div class="field"><label>Discharge ID</label><input id="dischargeDispositionId" value="1"></div><div class="field"><label>Specialty</label><input id="medicalSpecialty" value="Cardiology"></div><div class="field"><label>Emergency</label><input id="numberEmergency" value="1"></div><div class="field"><label>Inpatient</label><input id="numberInpatient" value="0"></div><div class="field"><label>Outpatient</label><input id="numberOutpatient" value="0"></div><div class="field"><label>Payer Code</label><input id="payerCode" value="MC"></div><div class="field"><label>Time In Hospital</label><input id="timeInHospital" value="7"></div></form><div class="actions"><button class="btn" onclick="createEncounter()">Create</button><button class="btn light" onclick="updateEncounter()">Update</button><button class="btn danger" onclick="deleteEncounter()">Delete</button><button class="btn warn" onclick="loadPatientEncounters()">Refresh</button></div></div><div class="card"><h3>Encounter List</h3><p class="sub">Patient-wise encounter records.</p><div id="encounterList" class="list"></div></div></div></section>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 border-b border-gray-100 bg-gray-50/50">
-                <div class="p-4 border-b sm:border-b-0 sm:border-r border-gray-100 text-center sm:text-left">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Total Hospital Days</span>
-                    <span class="text-2xl font-bold text-gray-800 mt-1 block" id="stat-total-days">0 Days</span>
-                </div>
-                <div class="p-4 border-b sm:border-b-0 sm:border-r border-gray-100 text-center sm:text-left">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Avg Risk Coefficient</span>
-                    <span class="text-2xl font-bold text-gray-800 mt-1 block" id="stat-avg-risk">0%</span>
-                </div>
-                <div class="p-4 text-center sm:text-left">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Active Follow-ups</span>
-                    <span class="text-2xl font-bold text-emerald-600 mt-1 block" id="stat-followups">0 Scheduled</span>
-                </div>
-            </div>
+    <section id="diagnosis" class="section"><div class="grid"><div class="card"><h3>Diagnosis</h3><p class="sub">Create diagnosis linked to selected encounter database ID.</p><form class="form-grid"><input type="hidden" id="dId"><div class="field"><label>Encounter DB ID</label><input id="dEncounterId" placeholder="1"></div><div class="field"><label>Lab Procedures</label><input id="numLabProcedures" value="42"></div><div class="field"><label>Procedures</label><input id="numProcedures" value="2"></div><div class="field"><label>Medications</label><input id="numMedications" value="15"></div><div class="field"><label>Diag1</label><input id="diag1" value="428"></div><div class="field"><label>Diag1 Desc</label><input id="diag1Desc" value="Heart failure"></div><div class="field"><label>Diag2</label><input id="diag2" value="250"></div><div class="field"><label>Diag2 Desc</label><input id="diag2Desc" value="Diabetes mellitus"></div><div class="field"><label>Diag3</label><input id="diag3" value="401"></div><div class="field"><label>Diag3 Desc</label><input id="diag3Desc" value="Hypertension"></div><div class="field"><label>Number Diagnoses</label><input id="numberDiagnoses" value="6"></div><div class="field"><label>Max Glu Serum</label><input id="maxGluSerum" value="High"></div><div class="field"><label>A1C Result</label><input id="a1cResult" value=">8"></div></form><div class="actions"><button class="btn" onclick="createDiagnosis()">Create</button><button class="btn light" onclick="updateDiagnosis()">Update</button><button class="btn danger" onclick="deleteDiagnosis()">Delete</button><button class="btn warn" onclick="loadDiagnosisByEncounter()">Get by Encounter</button></div></div><div class="card"><h3>Diagnosis Result</h3><div id="diagnosisResult" class="list"></div></div></div></section>
 
-            <div class="p-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label class="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Filter Risk Status:</label>
-                    <select id="filter-readmit" onchange="applyLiveFilters()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg p-1.5 font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-brandBlue w-full sm:w-auto">
-                        <option value="ALL">All Visits</option>
-                        <option value="&lt;30 font-mono">Readmitted &lt;30 days</option>
-                        <option value="&gt;30 font-mono">Readmitted &gt;30 days</option>
-                        <option value="NO">Not Readmitted</option>
-                    </select>
-                </div>
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label class="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Specialty:</label>
-                    <select id="filter-specialty" onchange="applyLiveFilters()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg p-1.5 font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-brandBlue w-full sm:w-auto">
-                        <option value="ALL">All Specialties</option>
-                    </select>
-                </div>
-            </div>
+    <section id="medications" class="section"><div class="grid"><div class="card"><h3>Medication Matrix</h3><p class="sub">Select No / Steady / Up / Down for medicines.</p><form id="medForm" class="form-grid"><input type="hidden" id="mId"><div class="field"><label>Encounter DB ID</label><input id="mEncounterId" placeholder="1"></div></form><div class="actions"><button class="btn" onclick="createMedication()">Create</button><button class="btn light" onclick="updateMedication()">Update</button><button class="btn danger" onclick="deleteMedication()">Delete</button><button class="btn warn" onclick="loadMedicationByEncounter()">Get by Encounter</button></div></div><div class="card"><h3>Medication Result</h3><div id="medicationResult" class="list"></div></div></div></section>
 
-            <div id="encounters-container" class="p-6 space-y-4">
-                
-                <div id="loading-state" class="text-center py-12 text-gray-500 text-sm">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brandBlue mb-3"></div>
-                    <p>Syncing tracking indices from data cluster...</p>
-                </div>
-
-                <div id="empty-state" class="hidden text-center py-16 border-2 border-dashed border-gray-200 rounded-xl">
-                    <p class="text-gray-500 text-sm">No historical clinical encounter records match the selected active search filters.</p>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="detail-drawer" class="fixed inset-0 z-50 invisible transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-xs" onclick="closeDetails()"></div>
-        
-        <div class="absolute right-0 top-0 bottom-0 max-w-md w-full bg-white shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-out" id="drawer-content">
-            
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900" id="det-title">Encounter Details</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">Clinical metrics & readmission log controller</p>
-                </div>
-                <button onclick="closeDetails()" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">✕</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-gray-700">
-                
-                <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Hospitalization Specs</h3>
-                    <div class="bg-gray-50 rounded-xl p-4 space-y-2.5 border border-gray-100">
-                        <div class="flex justify-between"><span class="text-gray-500">Medical Specialty:</span> <span class="font-semibold text-gray-900" id="det-specialty">-</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Time in Hospital:</span> <span class="font-semibold text-gray-900" id="det-time">-</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Payer Code:</span> <span class="font-mono font-bold text-brandBlue" id="det-payer">-</span></div>
-                        <div class="flex justify-between border-t border-gray-200/60 pt-2 text-xs text-gray-400">
-                            <span>Adm Type ID: <strong class="text-gray-600" id="det-adm-id">-</strong></span>
-                            <span>Src: <strong class="text-gray-600" id="det-src-id">-</strong></span>
-                            <span>Disch: <strong class="text-gray-600" id="det-dsch-id">-</strong></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Historical Frequency Metrics</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl text-center">
-                            <div class="text-[11px] text-blue-600 font-medium">Outpatient</div>
-                            <div class="text-lg font-bold text-blue-900 mt-0.5" id="det-outpatient">0</div>
-                        </div>
-                        <div class="bg-amber-50 border border-amber-100 p-2.5 rounded-xl text-center">
-                            <div class="text-[11px] text-amber-600 font-medium">Emergency</div>
-                            <div class="text-lg font-bold text-amber-900 mt-0.5" id="det-emergency">0</div>
-                        </div>
-                        <div class="bg-purple-50 border border-purple-100 p-2.5 rounded-xl text-center">
-                            <div class="text-[11px] text-purple-600 font-medium">Inpatient</div>
-                            <div class="text-lg font-bold text-purple-900 mt-0.5" id="det-inpatient">0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Live Risk Indicator</h3>
-                    <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
-                        <div id="risk-gauge-bar" class="w-0 h-full bg-brandBlue transition-all duration-500"></div>
-                    </div>
-                </div>
-
-                <form id="readmit-isolated-form" onsubmit="commitReadmissionFormChanges(event)" class="space-y-4 pt-5 border-t border-gray-200">
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Update Readmission Diagnostics</h3>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Saves live evaluation metrics directly into the database schema via sub-resource endpoints</p>
-                    </div>
-
-                    <input type="hidden" id="form-encounter-pk">
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Readmission Status</label>
-                        <select id="form-is-readmitted" class="w-full border border-gray-300 rounded-lg p-2 bg-white text-gray-800 font-medium focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue">
-                            <option value="NO">NO (No readmission recorded)</option>
-                            <option value="&lt;30">&lt;30 (Readmitted under 30 days)</option>
-                            <option value="&gt;30">&gt;30 (Readmitted after 30 days)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Risk Assessment Evaluation Score (1 - 100)</label>
-                        <input type="number" id="form-risk-score" min="1" max="100" oninput="updateLiveGauge(this.value)" class="w-full border border-gray-300 rounded-lg p-2 text-gray-800 font-medium focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Primary Relapse Cause Description</label>
-                        <textarea id="form-primary-cause" rows="3" class="w-full border border-gray-300 rounded-lg p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue" placeholder="Specify post-discharge diagnostic rationale or observations..."></textarea>
-                    </div>
-
-                    <div class="flex items-center gap-2.5 py-1">
-                        <input type="checkbox" id="form-followup" class="w-4 h-4 rounded border-gray-300 text-brandBlue focus:ring-brandBlue">
-                        <label for="form-followup" class="text-xs font-medium text-gray-700 select-none">Follow-up Care Protocol Scheduled</label>
-                    </div>
-
-                    <button type="submit" class="w-full bg-brandBlue hover:bg-brandHover text-white text-sm font-semibold py-2.5 rounded-xl shadow-md transition-all duration-200 mt-2">
-                        Commit Log Changes
-                    </button>
-                </form>
-
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8080/api'
-            : 'https://hospital-ncnw.onrender.com/api';
-
-        const currentPatientId = sessionStorage.getItem('patient_id') || '3';
-        let localEncountersCache = []; 
-
-        document.getElementById('api-endpoint-id').textContent = currentPatientId;
-
-        // 1. Initial Dashboard Run Controller Configuration Loop
-        async function loadDashboardWorkflow() {
-            await fetchPatientEncounters();
-            populateSpecialtyFilterOptions();
-            calculateStatisticsSummaryMetrics();
-        }
-
-        // 2. Data Cluster Synchronizer Endpoint Controller
-        async function fetchPatientEncounters() {
-            const container = document.getElementById('encounters-container');
-            const loadingBox = document.getElementById('loading-state');
-
-            try {
-                const response = await fetch(`${BASE_URL}/encounters/patient/${currentPatientId}`);
-                if (!response.ok) throw new Error(`HTTP Status Code: ${response.status}`);
-
-                localEncountersCache = await response.json();
-                loadingBox.classList.add('hidden');
-                renderFilteredEncounterViewCards(localEncountersCache);
-            } catch (error) {
-                loadingBox.classList.add('hidden');
-                showToast("Sandbox development layout mode enabled. Dynamic structural state active.", "info");
-                
-                // Static sandbox environment fallback mock arrays data logic
-                localEncountersCache = [
-                    {
-                        id: 101, encounterId: 84210, medicalSpecialty: "Internal Medicine", timeInHospital: 4, payerCode: "MC",
-                        admissionTypeId: 1, admissionSourceId: 7, dischargeDispositionId: 1, numberOutpatient: 0, numberEmergency: 1, numberInpatient: 0,
-                        readmitted: { isReadmitted: "<30", riskScore: 82, primaryCause: "Uncontrolled glycemia relapse indicators noted", followUpScheduled: true }
-                    },
-                    {
-                        id: 102, encounterId: 93155, medicalSpecialty: "Cardiology", timeInHospital: 7, payerCode: "BC",
-                        admissionTypeId: 2, admissionSourceId: 1, dischargeDispositionId: 3, numberOutpatient: 2, numberEmergency: 0, numberInpatient: 1,
-                        readmitted: { isReadmitted: "NO", riskScore: 34, primaryCause: "", followUpScheduled: false }
-                    },
-                    {
-                        id: 103, encounterId: 42109, medicalSpecialty: "Endocrinology", timeInHospital: 3, payerCode: "MD",
-                        admissionTypeId: 1, admissionSourceId: 7, dischargeDispositionId: 1, numberOutpatient: 1, numberEmergency: 0, numberInpatient: 0,
-                        readmitted: { isReadmitted: ">30", riskScore: 58, primaryCause: "Therapeutic dosage adjustments review tracking delay", followUpScheduled: true }
-                    }
-                ];
-                renderFilteredEncounterViewCards(localEncountersCache);
-            }
-        }
-
-        // 3. Grid View Cards Renderer Matrix
-        function renderFilteredEncounterViewCards(dataset) {
-            const container = document.getElementById('encounters-container');
-            const emptyBox = document.getElementById('empty-state');
-            document.getElementById('encounter-counter').textContent = `${dataset.length} encounter${dataset.length === 1 ? '' : 's'}`;
-
-            const oldCards = container.querySelectorAll('.dynamic-encounter-card');
-            oldCards.forEach(c => c.remove());
-
-            if (dataset.length === 0) {
-                emptyBox.classList.remove('hidden');
-                return;
-            }
-            emptyBox.classList.add('hidden');
-
-            dataset.forEach((enc) => {
-                const card = document.createElement('div');
-                card.className = "dynamic-encounter-card bg-white border border-gray-200 rounded-xl p-5 hover:shadow-sm transition-all duration-200 relative flex flex-col gap-3.5 shadow-xs";
-
-                let readmissionBadgeHTML = '';
-                if (enc.readmitted && enc.readmitted.isReadmitted) {
-                    const status = enc.readmitted.isReadmitted.trim();
-                    if (status === '<30') {
-                        readmissionBadgeHTML = `<span class="absolute top-5 right-5 text-xs font-semibold px-2.5 py-1 rounded-full bg-badgeRedBg text-badgeRedText border border-red-100">Readmitted &lt;30d</span>`;
-                    } else if (status === '>30') {
-                        readmissionBadgeHTML = `<span class="absolute top-5 right-5 text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-100">Readmitted &gt;30d</span>`;
-                    } else {
-                        readmissionBadgeHTML = `<span class="absolute top-5 right-5 text-xs font-semibold px-2.5 py-1 rounded-full bg-badgeGreenBg text-badgeGreenText border border-green-100">Not readmitted</span>`;
-                    }
-                } else {
-                    readmissionBadgeHTML = `<span class="absolute top-5 right-5 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 border border-gray-200 font-mono text-[10px]">No Status Logged</span>`;
-                }
-
-                const totalLabTestsCount = (enc.numberEmergency || 0) * 12 + (enc.timeInHospital || 0) * 6 + 14; 
-                const totalDiagnosesCount = (enc.numberInpatient || 0) * 2 + 3;
-                const lookupIdInCache = localEncountersCache.findIndex(item => item.id === enc.id);
-
-                card.innerHTML = `
-                    ${readmissionBadgeHTML}
-                    <div>
-                        <h3 class="text-[16px] font-bold text-gray-900 tracking-tight">Encounter #${enc.encounterId || 'N/A'}</h3>
-                        <p class="text-[13px] text-gray-500 mt-0.5">Specialty Tracking Domain: <strong class="text-gray-700">${enc.medicalSpecialty || 'General'}</strong></p>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2 text-xs font-medium text-gray-600">
-                        <span class="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg">⏱️ ${enc.timeInHospital || 0} days stay</span>
-                        <span class="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg">📋 ${totalDiagnosesCount} diagnoses</span>
-                        <span class="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg">🧪 ${totalLabTestsCount} lab tests</span>
-                    </div>
-
-                    <div>
-                        <button onclick="revealDetailsAndPopulateForm(${lookupIdInCache})" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-800 text-xs font-semibold py-2 px-3 rounded-lg shadow-sm transition-all focus:outline-none">
-                            View Details & Edit Status
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // 4. Live Runtime Extraction Filtering Metrics Engine
-        function applyLiveFilters() {
-            const riskFilter = document.getElementById('filter-readmit').value;
-            const specFilter = document.getElementById('filter-specialty').value;
-
-            let outputMatches = localEncountersCache.filter(enc => {
-                const status = (enc.readmitted?.isReadmitted || 'NO').trim();
-                const spec = enc.medicalSpecialty || 'General Practice';
-
-                const matchesRisk = (riskFilter === 'ALL') || (status === riskFilter);
-                const matchesSpec = (specFilter === 'ALL') || (spec === specFilter);
-
-                return matchesRisk && matchesSpec;
-            });
-
-            renderFilteredEncounterViewCards(outputMatches);
-        }
-
-        // 5. Numerical Statistics Computations Calculator Block
-        function calculateStatisticsSummaryMetrics() {
-            if (localEncountersCache.length === 0) return;
-
-            let totalDays = 0;
-            let combinedRiskScore = 0;
-            let followUpCount = 0;
-            let validatedRiskEntriesCount = 0;
-
-            localEncountersCache.forEach(enc => {
-                totalDays += (enc.timeInHospital || 0);
-                if (enc.readmitted) {
-                    combinedRiskScore += (enc.readmitted.riskScore || 0);
-                    validatedRiskEntriesCount++;
-                    if (enc.readmitted.followUpScheduled === true) followUpCount++;
-                }
-            });
-
-            const computedAverage = validatedRiskEntriesCount > 0 ? Math.round(combinedRiskScore / validatedRiskEntriesCount) : 0;
-
-            document.getElementById('stat-total-days').textContent = `${totalDays} Days`;
-            document.getElementById('stat-avg-risk').textContent = `${computedAverage}%`;
-            document.getElementById('stat-followups').textContent = `${followUpCount} Scheduled`;
-        }
-
-        // 6. Extracted Specialty Menu Options Loader Elements
-        function populateSpecialtyFilterOptions() {
-            const selector = document.getElementById('filter-specialty');
-            const uniqueSpecialties = [...new Set(localEncountersCache.map(e => e.medicalSpecialty || 'General Practice'))];
-            
-            selector.innerHTML = '<option value="ALL">All Specialties</option>';
-            uniqueSpecialties.forEach(spec => {
-                const opt = document.createElement('option');
-                opt.value = spec;
-                opt.textContent = spec;
-                selector.appendChild(opt);
-            });
-        }
-
-        // 7. Context Visual Indicator Slider Gauge Adjuster
-        function updateLiveGauge(scoreValue) {
-            const bar = document.getElementById('risk-gauge-bar');
-            const score = parseInt(scoreValue) || 0;
-            
-            bar.style.width = `${Math.min(Math.max(score, 0), 100)}%`;
-            
-            if (score > 75) {
-                bar.className = "h-full bg-red-600 transition-all duration-500";
-            } else if (score > 40) {
-                bar.className = "h-full bg-orange-500 transition-all duration-500";
-            } else {
-                bar.className = "h-full bg-emerald-500 transition-all duration-500";
-            }
-        }
-
-        // 8. Open Right Sliding Detail Block and Bind Inputs Group
-        function revealDetailsAndPopulateForm(index) {
-            const data = localEncountersCache[index];
-            if (!data) return;
-
-            document.getElementById('det-title').textContent = `Encounter #${data.encounterId}`;
-            document.getElementById('det-specialty').textContent = data.medicalSpecialty || 'General Practice';
-            document.getElementById('det-time').textContent = `${data.timeInHospital || 0} Days`;
-            document.getElementById('det-payer').textContent = data.payerCode || 'None';
-            
-            document.getElementById('det-adm-id').textContent = data.admissionTypeId ?? '-';
-            document.getElementById('det-src-id').textContent = data.admissionSourceId ?? '-';
-            document.getElementById('det-dsch-id').textContent = data.dischargeDispositionId ?? '-';
-            
-            document.getElementById('det-outpatient').textContent = data.numberOutpatient ?? 0;
-            document.getElementById('det-emergency').textContent = data.numberEmergency ?? 0;
-            document.getElementById('det-inpatient').textContent = data.numberInpatient ?? 0;
-
-            document.getElementById('form-encounter-pk').value = data.id; 
-            document.getElementById('form-is-readmitted').value = data.readmitted?.isReadmitted || 'NO';
-            
-            const currentScore = data.readmitted?.riskScore || 0;
-            document.getElementById('form-risk-score').value = currentScore;
-            updateLiveGauge(currentScore); 
-
-            document.getElementById('form-primary-cause').value = data.readmitted?.primaryCause || '';
-            document.getElementById('form-followup').checked = data.readmitted?.followUpScheduled || false;
-
-            const drawer = document.getElementById('detail-drawer');
-            const drawerContent = document.getElementById('drawer-content');
-            
-            drawer.classList.remove('invisible');
-            setTimeout(() => drawerContent.classList.remove('translate-x-full'), 10);
-        }
-
-        // 9. Mutating Data Controller Submission Pipeline
-        async function commitReadmissionFormChanges(event) {
-            event.preventDefault();
-            const encounterPrimaryKeyId = document.getElementById('form-encounter-pk').value;
-            
-            const payload = {
-                isReadmitted: document.getElementById('form-is-readmitted').value,
-                riskScore: parseInt(document.getElementById('form-risk-score').value) || 0,
-                primaryCause: document.getElementById('form-primary-cause').value,
-                followUpScheduled: document.getElementById('form-followup').checked
-            };
-
-            try {
-                const response = await fetch(`${BASE_URL}/readmissions/encounter/${encounterPrimaryKeyId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`Server returned error status context: ${response.status}`);
-                showToast("Readmission parameters persistent storage update saved completely.", "success");
-            } catch (err) {
-                // Mock execution loop update handler fallback logic 
-                const matchIndex = localEncountersCache.findIndex(item => item.id == encounterPrimaryKeyId);
-                if(matchIndex !== -1) {
-                    localEncountersCache[matchIndex].readmitted = payload;
-                }
-                showToast("Local runtime context proxy mutation updated successfully.", "success");
-            }
-
-            closeDetails();
-            renderFilteredEncounterViewCards(localEncountersCache);
-            calculateStatisticsSummaryMetrics();
-        }
-
-        function closeDetails() {
-            document.getElementById('drawer-content').className = "absolute right-0 top-0 bottom-0 max-w-md w-full bg-white shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-out";
-            setTimeout(() => document.getElementById('detail-drawer').classList.add('invisible'), 300);
-        }
-
-        function showToast(txt, type) {
-            const el = document.getElementById('status-toast');
-            el.className = `p-3.5 rounded-xl text-xs font-medium text-center border transition-all duration-300 ${
-                type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'
-            }`;
-            el.textContent = txt;
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 4000);
-        }
-
-        window.addEventListener('DOMContentLoaded', loadDashboardWorkflow);
-    </script>
+    <section id="readmission" class="section"><div class="grid"><div class="card"><h3>Readmission Risk</h3><p class="sub">Upsert readmission metrics by encounter ID.</p><form class="form-grid"><div class="field"><label>Encounter DB ID</label><input id="rEncounterId" placeholder="1"></div><div class="field"><label>Is Readmitted</label><select id="isReadmitted"><option>NO</option><option>&lt;30</option><option>&gt;30</option></select></div><div class="field"><label>Risk Score</label><input id="riskScore" type="number" value="78"></div><div class="field"><label>Follow Up</label><select id="followUpScheduled"><option value="true">true</option><option value="false">false</option></select></div><div class="field full-field"><label>Primary Cause</label><textarea id="primaryCause">Post-op Infection relapse combined with high HbA1c levels</textarea></div></form><div class="risk"><span id="riskBar"></span></div><div class="actions"><button class="btn" onclick="saveReadmission()">Save / Update</button><button class="btn light" onclick="loadReadmission()">Fetch</button></div></div><div class="card"><h3>Readmission Result</h3><div id="readmissionResult" class="list"></div></div></div></section>
+  </main>
+</div>
+<script>
+const BASE_URL = "https://hospital-ncnw.onrender.com";
+const medFields = ['acarbose','acetohexamide','chlorpropamide','citoglipton','examide','glimepiride','glimepiridePioglitazone','glipizide','glipizideMetformin','glyburide','glyburideMetformin','insulin','metformin','metforminPioglitazone','metforminRosiglitazone','miglitol','nateglinide','pioglitazone','repaglinide','rosiglitazone','tolazamide','tolbutamide','troglitazone'];
+let session = JSON.parse(sessionStorage.getItem('patientSession') || 'null');
+if(!session){ location.href='login.html'; }
+document.getElementById('baseUrlText').textContent=BASE_URL;
+function qs(id){return document.getElementById(id)}
+function msg(text,type='ok'){const m=qs('message');m.textContent=text;m.className='alert '+type;setTimeout(()=>{m.className='alert'},4500)}
+async function api(path,opt={}){const res=await fetch(BASE_URL+path,{headers:{'Content-Type':'application/json','Accept':'application/json'},...opt});const text=await res.text();let data=null;try{data=text?JSON.parse(text):null}catch(e){data=text}if(!res.ok)throw new Error(typeof data==='string'?data:(data?.message||data?.error||'Request failed'));return data}
+function showJSON(id,data){qs(id).textContent=JSON.stringify(data,null,2)}
+function renderCards(id,data){const arr=Array.isArray(data)?data:[data];qs(id).innerHTML=arr.filter(Boolean).map(x=>`<div class="item"><div class="item-head"><span>#${x.id ?? '-'}</span><small>${x.encounterId ? 'Encounter '+x.encounterId : x.fullName || x.diag1Desc || x.isReadmitted || 'Record'}</small></div><div class="kv">${Object.entries(x).slice(0,12).map(([k,v])=>`<span><b>${k}:</b> ${typeof v==='object'?JSON.stringify(v):v}</span>`).join('')}</div></div>`).join('')||'<p class="sub">No records found.</p>'}
+function showSection(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));qs(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');qs('sidebar').classList.remove('open')}
+function toggleMenu(){qs('sidebar').classList.toggle('open')}function logout(){sessionStorage.removeItem('patientSession');location.href='login.html'}
+function init(){qs('sideName').textContent=session.fullName||'Patient';qs('heroName').textContent=session.fullName||'Patient';qs('sideId').textContent=session.id||'-';qs('sideNbr').textContent=session.patientNbr||'-';qs('sessionView').textContent=JSON.stringify(session,null,2);fillPatientForm(session.raw||session);buildMedicationFields();if(session.id){loadPatientEncounters().catch(()=>{});}}
+function fillPatientForm(p){qs('pId').value=p.id||session.id||'';qs('pPatientNbr').value=p.patientNbr||session.patientNbr||'';qs('pFullName').value=p.fullName||session.fullName||'';qs('pEmail').value=p.email||session.email||'';qs('pDob').value=p.dob||'';qs('pGender').value=p.gender||'Female';qs('pAddress').value=p.address||'';qs('pRace').value=p.race||'';qs('pAge').value=p.age||'';qs('pWeight').value=p.weight||''}
+function patientPayload(){return{patientNbr:Number(qs('pPatientNbr').value),fullName:qs('pFullName').value,email:qs('pEmail').value,password:qs('pPassword').value,address:qs('pAddress').value,dob:qs('pDob').value,race:qs('pRace').value,gender:qs('pGender').value,age:qs('pAge').value,weight:qs('pWeight').value}}
+async function createPatient(){try{const d=await api('/api/patients',{method:'POST',body:JSON.stringify(patientPayload())});showJSON('apiResult',d);msg('Patient created');}catch(e){msg(e.message,'err')}}
+async function updatePatient(){try{const id=qs('pId').value||session.id;if(!id)throw new Error('Patient ID missing');const d=await api('/api/patients/'+id,{method:'PUT',body:JSON.stringify(patientPayload())});showJSON('apiResult',d);msg('Patient updated');}catch(e){msg(e.message,'err')}}
+async function deletePatient(){try{const id=qs('pId').value||session.id;if(!id)throw new Error('Patient ID missing');await api('/api/patients/'+id,{method:'DELETE'});msg('Patient deleted');logout();}catch(e){msg(e.message,'err')}}
+async function getPatientById(){try{const d=await api('/api/patients/'+qs('searchPatientId').value);showJSON('apiResult',d);fillPatientForm(d)}catch(e){msg(e.message,'err')}}
+async function getPatientByNumber(){try{const d=await api('/api/patients/number/'+qs('searchPatientNbr').value);showJSON('apiResult',d);fillPatientForm(d)}catch(e){msg(e.message,'err')}}
+async function loadAllPatients(){try{showJSON('apiResult',await api('/api/patients'))}catch(e){msg(e.message,'err')}}
+function encounterPayload(){return{encounterId:Number(qs('encounterId').value),admissionSourceId:Number(qs('admissionSourceId').value),admissionTypeId:Number(qs('admissionTypeId').value),changeFlag:qs('changeFlag').value,diabetesMed:qs('diabetesMed').value,dischargeDispositionId:Number(qs('dischargeDispositionId').value),medicalSpecialty:qs('medicalSpecialty').value,numberEmergency:Number(qs('numberEmergency').value),numberInpatient:Number(qs('numberInpatient').value),numberOutpatient:Number(qs('numberOutpatient').value),payerCode:qs('payerCode').value,timeInHospital:Number(qs('timeInHospital').value)}}
+async function createEncounter(){try{const pid=session.id||qs('pId').value;if(!pid)throw new Error('Patient ID missing');const d=await api('/api/encounters/patient/'+pid,{method:'POST',body:JSON.stringify(encounterPayload())});qs('eId').value=d?.id||'';msg('Encounter created');await loadPatientEncounters()}catch(e){msg(e.message,'err')}}
+async function updateEncounter(){try{const id=qs('eId').value;if(!id)throw new Error('Encounter DB ID missing');await api('/api/encounters/'+id,{method:'PUT',body:JSON.stringify(encounterPayload())});msg('Encounter updated');await loadPatientEncounters()}catch(e){msg(e.message,'err')}}
+async function deleteEncounter(){try{const id=qs('eId').value;if(!id)throw new Error('Encounter DB ID missing');await api('/api/encounters/'+id,{method:'DELETE'});msg('Encounter deleted');await loadPatientEncounters()}catch(e){msg(e.message,'err')}}
+async function loadPatientEncounters(){const pid=session.id||qs('pId').value;if(!pid)return;const d=await api('/api/encounters/patient/'+pid);renderCards('encounterList',d);qs('statEncounters').textContent=Array.isArray(d)?d.length:0;const first=Array.isArray(d)?d[0]:d;if(first?.id){qs('eId').value=first.id;qs('dEncounterId').value=first.id;qs('mEncounterId').value=first.id;qs('rEncounterId').value=first.id;}return d}
+function diagnosisPayload(){return{numLabProcedures:Number(qs('numLabProcedures').value),numProcedures:Number(qs('numProcedures').value),numMedications:Number(qs('numMedications').value),diag1:qs('diag1').value,diag1Desc:qs('diag1Desc').value,diag2:qs('diag2').value,diag2Desc:qs('diag2Desc').value,diag3:qs('diag3').value,diag3Desc:qs('diag3Desc').value,numberDiagnoses:Number(qs('numberDiagnoses').value),maxGluSerum:qs('maxGluSerum').value,a1cResult:qs('a1cResult').value}}
+async function createDiagnosis(){try{const id=qs('dEncounterId').value;if(!id)throw new Error('Encounter ID missing');const d=await api('/api/diagnoses/encounter/'+id,{method:'POST',body:JSON.stringify(diagnosisPayload())});qs('dId').value=d?.id||'';qs('statDiag').textContent=d?.diag1||'Yes';renderCards('diagnosisResult',d);msg('Diagnosis created')}catch(e){msg(e.message,'err')}}
+async function updateDiagnosis(){try{const id=qs('dId').value;if(!id)throw new Error('Diagnosis ID missing');const d=await api('/api/diagnoses/'+id,{method:'PUT',body:JSON.stringify(diagnosisPayload())});renderCards('diagnosisResult',d);msg('Diagnosis updated')}catch(e){msg(e.message,'err')}}
+async function deleteDiagnosis(){try{const id=qs('dId').value;if(!id)throw new Error('Diagnosis ID missing');await api('/api/diagnoses/'+id,{method:'DELETE'});renderCards('diagnosisResult',null);msg('Diagnosis deleted')}catch(e){msg(e.message,'err')}}
+async function loadDiagnosisByEncounter(){try{const d=await api('/api/diagnoses/encounter/'+qs('dEncounterId').value);qs('dId').value=(Array.isArray(d)?d[0]?.id:d?.id)||'';qs('statDiag').textContent=(Array.isArray(d)?d[0]?.diag1:d?.diag1)||'Yes';renderCards('diagnosisResult',d)}catch(e){msg(e.message,'err')}}
+function buildMedicationFields(){const form=qs('medForm');medFields.forEach((f,i)=>{const wrap=document.createElement('div');wrap.className='field';wrap.innerHTML=`<label>${f}</label><select id="${f}"><option>No</option><option>Steady</option><option>Up</option><option>Down</option></select>`;form.appendChild(wrap)});qs('glipizide').value='Steady';qs('glyburide').value='Down';qs('insulin').value='Up';qs('metformin').value='Steady'}
+function medicationPayload(){const o={};medFields.forEach(f=>o[f]=qs(f).value);return o}
+async function createMedication(){try{const id=qs('mEncounterId').value;if(!id)throw new Error('Encounter ID missing');const d=await api('/api/medications/encounter/'+id,{method:'POST',body:JSON.stringify(medicationPayload())});qs('mId').value=d?.id||'';qs('statMed').textContent='Saved';renderCards('medicationResult',d);msg('Medication created')}catch(e){msg(e.message,'err')}}
+async function updateMedication(){try{const id=qs('mId').value;if(!id)throw new Error('Medication ID missing');const d=await api('/api/medications/'+id,{method:'PUT',body:JSON.stringify(medicationPayload())});renderCards('medicationResult',d);msg('Medication updated')}catch(e){msg(e.message,'err')}}
+async function deleteMedication(){try{const id=qs('mId').value;if(!id)throw new Error('Medication ID missing');await api('/api/medications/'+id,{method:'DELETE'});renderCards('medicationResult',null);msg('Medication deleted')}catch(e){msg(e.message,'err')}}
+async function loadMedicationByEncounter(){try{const d=await api('/api/medications/encounter/'+qs('mEncounterId').value);const row=Array.isArray(d)?d[0]:d;qs('mId').value=row?.id||'';medFields.forEach(f=>{if(row?.[f])qs(f).value=row[f]});qs('statMed').textContent=row?'Loaded':'-';renderCards('medicationResult',d)}catch(e){msg(e.message,'err')}}
+function readmissionPayload(){return{isReadmitted:qs('isReadmitted').value,riskScore:Number(qs('riskScore').value),primaryCause:qs('primaryCause').value,followUpScheduled:qs('followUpScheduled').value==='true'}}
+async function saveReadmission(){try{const id=qs('rEncounterId').value;if(!id)throw new Error('Encounter ID missing');const d=await api('/api/readmissions/encounter/'+id,{method:'PUT',body:JSON.stringify(readmissionPayload())});paintRisk(d?.riskScore||qs('riskScore').value);renderCards('readmissionResult',d);msg('Readmission saved')}catch(e){msg(e.message,'err')}}
+async function loadReadmission(){try{const d=await api('/api/readmissions/encounter/'+qs('rEncounterId').value);const row=Array.isArray(d)?d[0]:d;if(row){qs('isReadmitted').value=row.isReadmitted||'NO';qs('riskScore').value=row.riskScore||0;qs('primaryCause').value=row.primaryCause||'';qs('followUpScheduled').value=String(!!row.followUpScheduled);paintRisk(row.riskScore)}renderCards('readmissionResult',d)}catch(e){msg(e.message,'err')}}
+function paintRisk(v){v=Number(v||0);qs('riskBar').style.width=Math.max(0,Math.min(100,v))+'%';qs('statRisk').textContent=v+'%'}
+qs('riskScore').addEventListener('input',e=>paintRisk(e.target.value));
+init();paintRisk(qs('riskScore').value);
+</script>
 </body>
 </html>

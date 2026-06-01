@@ -1,457 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HealthPortal — Enter</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --green-deep:    #1f2a1d;
-    --green-mid:     #2d3a2a;
-    --green-hover:   #2a3827;
-    --green-body:    #4b5b47;
-    --green-head:    #336443;
-    --green-accent:  #85AB8B;
-    --green-cta:     #3d5638;
-    --green-light:   #eef5ec;
-    --cream:         #f7f9f5;
-    --white:         #ffffff;
-  }
-
-  html, body {
-    height: 100%;
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--green-deep);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ── Layout ── */
-  .page {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* ── Left Panel ── */
-  .left {
-    position: relative;
-    background: var(--green-deep);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 2.5rem 3rem;
-    overflow: hidden;
-  }
-
-  .left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 20% 80%, rgba(133,171,139,0.18) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(61,86,56,0.4) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .left-logo {
-    position: relative;
-    z-index: 1;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--green-accent);
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .left-logo sup { font-size: 0.55rem; }
-
-  .left-body {
-    position: relative;
-    z-index: 1;
-  }
-
-  .left-body h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 3.5vw, 3.2rem);
-    line-height: 1.05;
-    color: var(--white);
-    letter-spacing: -0.03em;
-    margin-bottom: 1.25rem;
-  }
-
-  .left-body h2 em {
-    font-style: italic;
-    color: var(--green-accent);
-  }
-
-  .left-body p {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.9rem;
-    line-height: 1.7;
-    max-width: 320px;
-    font-weight: 300;
-  }
-
-  .features {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .feature-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 100px;
-    padding: 0.45rem 0.9rem;
-    width: fit-content;
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.75);
-    backdrop-filter: blur(4px);
-  }
-
-  .feature-pill .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green-accent);
-    flex-shrink: 0;
-  }
-
-  /* ── Right Panel ── */
-  .right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1.5rem;
-    background: var(--cream);
-  }
-
-  .card {
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .card-header {
-    margin-bottom: 2.5rem;
-  }
-
-  .card-header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.2rem;
-    color: var(--green-head);
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-
-  .card-header p {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--green-body);
-    font-weight: 300;
-  }
-
-  .card-header p a {
-    color: var(--green-cta);
-    font-weight: 500;
-    text-decoration: none;
-    border-bottom: 1px solid var(--green-accent);
-    transition: opacity .2s;
-  }
-  .card-header p a:hover { opacity: 0.7; }
-
-  /* ── Form ── */
-  .field { margin-bottom: 1.1rem; }
-
-  label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--green-body);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-  }
-
-  input[type="email"],
-  input[type="password"],
-  input[type="text"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1.5px solid rgba(61,86,56,0.2);
-    border-radius: 10px;
-    background: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    color: var(--green-deep);
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-
-  input:focus {
-    border-color: var(--green-accent);
-    box-shadow: 0 0 0 3px rgba(133,171,139,0.18);
-  }
-
-  .input-wrap { position: relative; }
-
-  .toggle-pw {
-    position: absolute;
-    right: 0.9rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--green-body);
-    opacity: 0.55;
-    transition: opacity .2s;
-    display: flex;
-    align-items: center;
-  }
-  .toggle-pw:hover { opacity: 1; }
-
-  /* ── Error / Success Alerts ── */
-  .alert {
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    font-size: 0.82rem;
-    font-weight: 500;
-    margin-bottom: 1.1rem;
-    display: none;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .alert.error  { background: #fdf0f0; color: #b91c1c; border: 1px solid #fca5a5; display: flex; }
-  .alert.success{ background: #f0fdf4; color: #15803d; border: 1px solid #86efac; display: flex; }
-  .alert.hidden { display: none !important; }
-
-  /* ── Submit Button ── */
-  .btn-primary {
-    width: 100%;
-    padding: 0.85rem;
-    background: var(--green-deep);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .2s, transform .15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.4rem;
-    letter-spacing: -0.01em;
-  }
-  .btn-primary:hover:not(:disabled) { background: var(--green-hover); transform: translateY(-1px); }
-  .btn-primary:active:not(:disabled) { transform: translateY(0); }
-  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
-
-  /* Loading spinner */
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin .6s linear infinite;
-    display: none;
-  }
-  .btn-primary.loading .spinner { display: block; }
-  .btn-primary.loading .btn-text { opacity: 0.7; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Divider ── */
-  .divider {
-    text-align: center;
-    margin: 1.4rem 0;
-    position: relative;
-    color: var(--green-body);
-    font-size: 0.78rem;
-    opacity: 0.5;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 42%;
-    height: 1px;
-    background: rgba(61,86,56,0.15);
-  }
-  .divider::before { left: 0; }
-  .divider::after  { right: 0; }
-
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .page { grid-template-columns: 1fr; }
-    .left { display: none; }
-    .right {
-      min-height: 100vh;
-      padding: 2.5rem 1.5rem;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthPortal | Patient Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f5f2ea;--ink:#182018;--muted:#62715f;--deep:#1f2a1d;--mid:#33462f;--accent:#85AB8B;--accent2:#d8ead7;--white:#fff;--line:rgba(31,42,29,.13);--danger:#b3261e;--shadow:0 24px 60px rgba(31,42,29,.14);--radius:30px
     }
-    .card { max-width: 100%; }
-  }
-
-  /* Fade-in */
-  .card { animation: fadeUp .5s ease both; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-</style>
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at top left,#e5f3de 0,#f5f2ea 34%,#fffaf0 100%);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    .bg-orb{position:fixed;border-radius:999px;filter:blur(2px);opacity:.65;z-index:-1;animation:float 8s ease-in-out infinite alternate}.o1{width:320px;height:320px;background:#d7ead3;right:-90px;top:-70px}.o2{width:240px;height:240px;background:#e8d7b7;left:-80px;bottom:30px;animation-delay:1s}.o3{width:120px;height:120px;background:#b7d6bd;right:18%;bottom:10%}@keyframes float{to{transform:translate3d(18px,-24px,0) scale(1.06)}}
+    .page{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;gap:28px;padding:26px;align-items:stretch}.hero{position:relative;border-radius:var(--radius);background:linear-gradient(145deg,#21301f,#42583b);overflow:hidden;color:#fff;box-shadow:var(--shadow);padding:34px;display:flex;flex-direction:column;justify-content:space-between;min-height:650px}.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.18),rgba(0,0,0,.05)),url('assets/hospital-hero.jpg');background-size:cover;background-position:center;opacity:.22}.hero>*{position:relative}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}.logo{width:42px;height:42px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(10px)}.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(42px,7vw,86px);line-height:.92;font-weight:400;max-width:680px;margin:50px 0 20px}.hero p{max-width:570px;font-size:17px;color:rgba(255,255,255,.82);line-height:1.7}.hero-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}.glass{padding:18px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.1);backdrop-filter:blur(16px);border-radius:24px}.glass strong{display:block;font-size:25px;margin-bottom:4px}.glass span{font-size:12px;color:rgba(255,255,255,.72)}
+    .panel{border-radius:var(--radius);background:rgba(255,255,255,.76);border:1px solid rgba(255,255,255,.8);box-shadow:var(--shadow);backdrop-filter:blur(20px);padding:24px;display:flex;align-items:center}.auth{width:100%;max-width:560px;margin:auto}.tabs{display:flex;background:#edf3e9;padding:6px;border-radius:999px;margin-bottom:22px}.tabs button{flex:1;border:0;padding:13px 16px;border-radius:999px;background:transparent;font-weight:800;color:var(--muted);cursor:pointer}.tabs button.active{background:var(--deep);color:#fff;box-shadow:0 10px 24px rgba(31,42,29,.22)}.title{margin-bottom:22px}.title h2{font-family:'DM Serif Display',serif;font-size:42px;font-weight:400;color:var(--deep)}.title p{color:var(--muted);margin-top:6px}.form{display:none;animation:rise .45s ease both}.form.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:800;margin:0 0 7px;color:var(--mid)}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px 15px;font:inherit;outline:none;transition:.2s}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 5px rgba(133,171,139,.15)}.btn{width:100%;border:0;background:var(--deep);color:white;padding:15px 18px;border-radius:18px;font-weight:900;font-size:15px;cursor:pointer;transition:.25s;box-shadow:0 16px 30px rgba(31,42,29,.18)}.btn:hover{transform:translateY(-2px);background:#2e3d2b}.btn.secondary{background:#eef5ec;color:var(--deep);box-shadow:none}.hint{font-size:13px;color:var(--muted);line-height:1.6;margin-top:14px}.alert{display:none;margin:14px 0;padding:13px 15px;border-radius:18px;font-size:14px}.alert.ok{display:block;background:#e8f6e5;color:#205529}.alert.err{display:block;background:#ffe9e6;color:var(--danger)}.api-box{margin-top:18px;padding:14px;border-radius:20px;background:#f6f8f3;border:1px solid var(--line);font-size:12px;color:var(--muted);word-break:break-all}.full{grid-column:1/-1}
+    @media(max-width:960px){.page{grid-template-columns:1fr;padding:16px}.hero{min-height:auto;padding:26px}.hero-cards{grid-template-columns:1fr}.panel{padding:18px}.grid{grid-template-columns:1fr}.title h2{font-size:36px}}
+  </style>
 </head>
 <body>
-
-<div class="page">
-  <!-- Left decorative panel -->
-  <div class="left">
-    <div class="left-logo">
-      HealthPortal<sup>™</sup>
-    </div>
-    <div class="left-body">
-      <h2>Your health,<br /><em>in one place.</em></h2>
-      <p>Access your complete medical history, diagnoses, encounters, and care plans — securely and instantly.</p>
-    </div>
-    <div class="features">
-      <div class="feature-pill"><span class="dot"></span>Real-time encounter tracking</div>
-      <div class="feature-pill"><span class="dot"></span>ICD-9 diagnosis summaries</div>
-      <div class="feature-pill"><span class="dot"></span>Medication matrix history</div>
-      <div class="feature-pill"><span class="dot"></span>Readmission risk scoring</div>
-    </div>
-  </div>
-
-  <!-- Right login form -->
-  <div class="right">
-    <div class="card">
-      <div class="card-header">
-        <h1>Welcome back.</h1>
-        <p>New here? <a href="register.html">Create an account</a></p>
-      </div>
-
-      <div class="alert" id="alertBox">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="alertMsg"></span>
-      </div>
-
-      <form id="loginForm" novalidate>
-        <div class="field">
-          <label for="email">Email address</label>
-          <input type="email" id="email" name="email" placeholder="you@healthportal.com" autocomplete="email" required />
+  <div class="bg-orb o1"></div><div class="bg-orb o2"></div><div class="bg-orb o3"></div>
+  <main class="page">
+    <section class="hero">
+      <div class="brand"><div class="logo">✚</div><span>HealthPortal</span></div>
+      <div>
+        <h1>Calm care, clear records.</h1>
+        <p>Login or register a patient profile and continue to a session-based dashboard connected with Patient, Encounter, Diagnosis, Medication and Readmission APIs.</p>
+        <div class="hero-cards">
+          <div class="glass"><strong>24/7</strong><span>Patient access</span></div>
+          <div class="glass"><strong>5</strong><span>Clinical modules</span></div>
+          <div class="glass"><strong>API</strong><span>Spring Boot ready</span></div>
         </div>
+      </div>
+      <p class="hint" style="color:rgba(255,255,255,.72)">Image support: put your design image at <b>assets/hospital-hero.jpg</b>. The UI still works without it.</p>
+    </section>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-wrap">
-            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
-            <button type="button" class="toggle-pw" onclick="togglePw()" aria-label="Show/hide password">
-              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+    <section class="panel">
+      <div class="auth">
+        <div class="tabs">
+          <button id="loginTab" class="active" onclick="switchTab('login')">Login</button>
+          <button id="registerTab" onclick="switchTab('register')">Register</button>
+        </div>
+        <div class="title">
+          <h2 id="formTitle">Welcome back</h2>
+          <p id="formSub">Use your patient email and password to open the dashboard.</p>
+        </div>
+        <div id="message" class="alert"></div>
+
+        <form id="loginForm" class="form active">
+          <div class="field"><label>Email</label><input id="loginEmail" type="email" required placeholder="allison.hill@healthportal.com"></div>
+          <div class="field"><label>Password</label><input id="loginPassword" type="password" required placeholder="securePassword123"></div>
+          <button class="btn" type="submit">Login to Dashboard</button>
+          <p class="hint">After successful login, patient data is saved in <b>sessionStorage</b>. No JWT is required.</p>
+        </form>
+
+        <form id="registerForm" class="form">
+          <div class="grid">
+            <div class="field"><label>Patient Number</label><input id="patientNbr" type="number" required value="8222158"></div>
+            <div class="field"><label>Full Name</label><input id="fullName" required value="John Doe"></div>
+            <div class="field"><label>Email</label><input id="email" type="email" required value="john.doe@healthportal.com"></div>
+            <div class="field"><label>Password</label><input id="password" type="password" required value="password456"></div>
+            <div class="field full"><label>Address</label><input id="address" required value="456 Spine Road, Pune"></div>
+            <div class="field"><label>Date of Birth</label><input id="dob" type="date" required value="1988-11-23"></div>
+            <div class="field"><label>Race</label><input id="race" required value="Asian"></div>
+            <div class="field"><label>Gender</label><select id="gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="field"><label>Age</label><input id="age" required value="37"></div>
+            <div class="field"><label>Weight</label><input id="weight" required value="82kg"></div>
           </div>
-        </div>
-
-        <button type="submit" class="btn-primary" id="loginBtn">
-          <div class="spinner"></div>
-          <span class="btn-text">Enter Portal</span>
-        </button>
-      </form>
-
-      <div class="divider">or</div>
-      <p style="text-align:center;font-size:0.82rem;color:var(--green-body);">
-        Don't have an account? <a href="register.html" style="color:var(--green-cta);font-weight:500;text-decoration:none;border-bottom:1px solid var(--green-accent);">Register now →</a>
-      </p>
-    </div>
-  </div>
-</div>
+          <button class="btn" type="submit">Create Patient Account</button>
+          <p class="hint">Registration uses <b>POST /api/patients/register</b>.</p>
+        </form>
+        <div class="api-box">BASE_URL: <b id="baseUrlText"></b><br>Change BASE_URL in the script if your backend is hosted elsewhere.</div>
+      </div>
+    </section>
+  </main>
 
 <script>
-  const API = 'https://hospital-ncnw.onrender.com/api';
+  const BASE_URL = "https://hospital-ncnw.onrender.com";
+  document.getElementById('baseUrlText').textContent = BASE_URL;
 
-  // ── Session guard: if already logged in, skip to patient dash ──
-  (function() {
-    const s = sessionStorage.getItem('hp_session');
-    if (s) { window.location.href = 'patient.html'; }
-  })();
-
-  function togglePw() {
-    const pw = document.getElementById('password');
-    const icon = document.getElementById('eyeIcon');
-    if (pw.type === 'password') {
-      pw.type = 'text';
-      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    } else {
-      pw.type = 'password';
-      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    }
+  function switchTab(tab){
+    const isLogin = tab === 'login';
+    document.getElementById('loginTab').classList.toggle('active', isLogin);
+    document.getElementById('registerTab').classList.toggle('active', !isLogin);
+    document.getElementById('loginForm').classList.toggle('active', isLogin);
+    document.getElementById('registerForm').classList.toggle('active', !isLogin);
+    document.getElementById('formTitle').textContent = isLogin ? 'Welcome back' : 'Create patient profile';
+    document.getElementById('formSub').textContent = isLogin ? 'Use your patient email and password to open the dashboard.' : 'Register a new patient record using your Spring Boot API.';
+    showMessage('', '');
   }
 
-  function showAlert(msg, type) {
-    const box = document.getElementById('alertBox');
-    const txt = document.getElementById('alertMsg');
-    box.className = 'alert ' + type;
-    txt.textContent = msg;
+  function showMessage(text, type){
+    const box = document.getElementById('message');
+    box.textContent = text;
+    box.className = 'alert';
+    if(type) box.classList.add(type);
   }
 
-  function hideAlert() {
-    document.getElementById('alertBox').className = 'alert hidden';
+  async function api(path, options = {}){
+    const res = await fetch(BASE_URL + path, {
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      ...options
+    });
+    let data = null;
+    const text = await res.text();
+    try { data = text ? JSON.parse(text) : null; } catch(e){ data = text; }
+    if(!res.ok){ throw new Error(typeof data === 'string' ? data : (data?.message || data?.error || 'Request failed')); }
+    return data;
   }
 
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  function saveSession(loginData, email){
+    const patient = loginData || {};
+    const id = patient.id || patient.patientId || patient.patient_id || patient.patient?.id;
+    const fullName = patient.fullName || patient.name || patient.patientName || patient.patient?.fullName || 'Patient';
+    const patientNbr = patient.patientNbr || patient.patientNumber || patient.patient?.patientNbr || '';
+    sessionStorage.setItem('patientSession', JSON.stringify({ id, fullName, email, patientNbr, raw: patient, loggedInAt: new Date().toISOString() }));
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
-    hideAlert();
+    showMessage('Logging in...', 'ok');
+    try{
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const data = await api('/api/patients/login', { method:'POST', body: JSON.stringify({ email, password }) });
+      saveSession(data, email);
+      location.href = 'patientdash.html';
+    }catch(err){ showMessage('Login failed: ' + err.message, 'err'); }
+  });
 
-    const email    = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const btn      = document.getElementById('loginBtn');
-
-    if (!email || !password) {
-      showAlert('Please fill in both fields.', 'error'); return;
-    }
-
-    btn.classList.add('loading');
-    btn.disabled = true;
-
-    try {
-      const res = await fetch(`${API}/patients/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok) {
-        // Store session
-        sessionStorage.setItem('hp_session', JSON.stringify({
-          id:          data.id          ?? data.patientId ?? null,
-          patientNbr:  data.patientNbr  ?? data.patientNumber ?? null,
-          fullName:    data.fullName     ?? data.name ?? email,
-          email:       email
-        }));
-        showAlert('Login successful! Redirecting…', 'success');
-        setTimeout(() => { window.location.href = 'patient.html'; }, 800);
-      } else {
-        const msg = data.message || data.error || data.reason || 'Invalid email or password.';
-        showAlert(msg, 'error');
-      }
-    } catch (err) {
-      showAlert('Cannot reach the server. Please try again.', 'error');
-    } finally {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
+  document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    showMessage('Creating account...', 'ok');
+    try{
+      const payload = {
+        patientNbr: Number(document.getElementById('patientNbr').value),
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        address: document.getElementById('address').value.trim(),
+        dob: document.getElementById('dob').value,
+        race: document.getElementById('race').value.trim(),
+        gender: document.getElementById('gender').value,
+        age: document.getElementById('age').value,
+        weight: document.getElementById('weight').value
+      };
+      const data = await api('/api/patients/register', { method:'POST', body: JSON.stringify(payload) });
+      sessionStorage.setItem('patientSession', JSON.stringify({ id:data?.id, fullName:payload.fullName, email:payload.email, patientNbr:payload.patientNbr, raw:data, loggedInAt:new Date().toISOString() }));
+      showMessage('Account created successfully. Opening dashboard...', 'ok');
+      setTimeout(()=> location.href = 'patientdash.html', 700);
+    }catch(err){ showMessage('Registration failed: ' + err.message, 'err'); }
   });
 </script>
 </body>
