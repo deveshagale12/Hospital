@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Records Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-md sticky top-0 z-50 border-b-4 border-amber-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 group">
+                <div class="p-2.5 bg-amber-500 rounded-lg text-indigo-950 shadow-inner group-hover:scale-105 transition-transform duration-200">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">PENNANT HEALTH</h1>
+                    <p class="text-xs text-slate-300 tracking-wider uppercase font-medium">Clinical Ledger System</p>
+                </div>
+            </div>
+            <div class="text-xs bg-indigo-900/60 border border-indigo-700/50 rounded-full px-4 py-1.5 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-slate-300 font-mono text-center">API: https://hospital-ncnw.onrender.com</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-white border-b border-slate-200/80 shadow-sm sticky top-[76px] z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="relative max-w-md w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input 
+                    type="text" 
+                    id="global-search" 
+                    oninput="executeSearchFilter()" 
+                    placeholder="Search visible records matrix instantly..." 
+                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                >
+                <div id="search-badge" class="absolute inset-y-0 right-0 pr-3 hidden flex items-center">
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Filtered</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
+        
+        <aside class="w-full lg:w-64 flex-shrink-0">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 sticky top-44">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Session Modules</h2>
+                <nav class="space-y-1" id="session-tabs">
+                    <button onclick="switchTab('patients')" id="btn-patients" class="tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-semibold bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-user-injured w-5 text-lg"></i> <span>1. Patients</span></span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-70"></i>
+                    </button>
+                    <button onclick="switchTab('encounters')" id="btn-encounters" class="tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-hospital-user w-5 text-lg"></i> <span>2. Encounters</span></span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+                    <button onclick="switchTab('diagnoses')" id="btn-diagnoses" class="tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-microscope w-5 text-lg"></i> <span>3. Diagnoses</span></span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+                    <button onclick="switchTab('medications')" id="btn-medications" class="tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-capsules w-5 text-lg"></i> <span>4. Medications</span></span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <section class="flex-1 bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 relative min-h-[500px]">
+            
+            <div id="panel-patients" class="tab-panel fade-in space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Patient Demographics Register</h2>
+                        <p class="text-sm text-slate-500">Manage base hospital candidate records and identifiers</p>
+                    </div>
+                    <button onclick="openPatientModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-2 shadow transition-all transform active:scale-95">
+                        <i class="fa-solid fa-plus"></i> <span>Register Patient</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="px-6 py-3">Internal ID</th>
+                                <th class="px-6 py-3">Patient Business Nbr</th>
+                                <th class="px-6 py-3">Race</th>
+                                <th class="px-6 py-3">Gender / Age</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-patients-body" class="divide-y divide-slate-100 text-sm data-rows-target">
+                            <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400"><i class="fa-solid fa-spinner animate-spin mr-2"></i> Loading platform data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-encounters" class="tab-panel fade-in space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Hospital Stay Logs</h2>
+                        <p class="text-sm text-slate-500">Track and create historical inpatient admissions</p>
+                    </div>
+                    <button onclick="openEncounterModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-2 shadow transition-all transform active:scale-95">
+                        <i class="fa-solid fa-plus"></i> <span>Log Stay Entry</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="px-6 py-3">Encounter ID</th>
+                                <th class="px-6 py-3">Specialty</th>
+                                <th class="px-6 py-3">Stay Duration</th>
+                                <th class="px-6 py-3">Diabetes Med</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-encounters-body" class="divide-y divide-slate-100 text-sm data-rows-target">
+                            <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400">Loading system data arrays...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-diagnoses" class="tab-panel fade-in space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Lab Metrics & ICD-9 Diagnostics</h2>
+                        <p class="text-sm text-slate-500">View diagnostic profiles attached to patient visits</p>
+                    </div>
+                    <button onclick="openDiagnosisModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-2 shadow transition-all transform active:scale-95">
+                        <i class="fa-solid fa-plus"></i> <span>Add Profile Entry</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="px-6 py-3">ID</th>
+                                <th class="px-6 py-3">Lab Procedures</th>
+                                <th class="px-6 py-3">ICD-9 Codes (1 / 2 / 3)</th>
+                                <th class="px-6 py-3">A1C Result</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-diagnoses-body" class="divide-y divide-slate-100 text-sm data-rows-target"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-medications" class="tab-panel fade-in space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Anti-Diabetic Drug Matrix</h2>
+                        <p class="text-sm text-slate-500">Track medication changes and therapeutic delivery levels</p>
+                    </div>
+                    <button onclick="openMedicationModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-2 shadow transition-all transform active:scale-95">
+                        <i class="fa-solid fa-plus"></i> <span>Log Medication Profile</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="px-6 py-3">Log ID</th>
+                                <th class="px-6 py-3">Metformin</th>
+                                <th class="px-6 py-3">Glipizide</th>
+                                <th class="px-6 py-3">Insulin Status</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-medications-body" class="divide-y divide-slate-100 text-sm data-rows-target"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="bg-slate-950 text-slate-400 py-4 text-center text-xs border-t border-slate-800 mt-auto">
+        &copy; 2026 Pennant Banking Architecture Core System. Secure Hospital Logging Application Interface.
+    </footer>
+
+    <dialog id="modal-patient" class="rounded-xl shadow-2xl p-6 w-full max-w-md backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm animate-fadeIn">
+        <form id="form-patient" method="dialog" class="space-y-4">
+            <h3 id="patient-modal-title" class="text-lg font-bold text-indigo-950 border-b pb-2">Register Patient</h3>
+            <input type="hidden" id="field-p-id">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Patient Business Number</label>
+                <input type="number" id="field-p-nbr" required class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Race Classification</label>
+                <input type="text" id="field-p-race" placeholder="e.g. AfricanAmerican, Caucasian" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Gender</label>
+                    <select id="field-p-gender" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Age Range Bracket</label>
+                    <input type="text" id="field-p-age" placeholder="[60-70)" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Weight Value</label>
+                <input type="text" id="field-p-weight" placeholder="?" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-patient').close()" class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700">Save System Data</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="modal-encounter" class="rounded-xl shadow-2xl p-6 w-full max-w-lg backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm animate-fadeIn">
+        <form id="form-encounter" method="dialog" class="space-y-4">
+            <h3 id="encounter-modal-title" class="text-lg font-bold text-indigo-950 border-b pb-2">Log Stay Entry</h3>
+            <input type="hidden" id="field-e-id">
+            <div id="wrapper-e-patient">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Internal Target Patient DB ID Link</label>
+                <input type="number" id="field-e-patient-id" required class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="1">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Encounter Business ID</label>
+                    <input type="number" id="field-e-nbr" required class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="246810">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Medical Specialty</label>
+                    <input type="text" id="field-e-specialty" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Cardiology">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Admission Type ID</label>
+                    <input type="number" id="field-e-adm" value="1" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Discharge Disp. ID</label>
+                    <input type="number" id="field-e-dis" value="3" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Admission Src ID</label>
+                    <input type="number" id="field-e-src" value="7" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Time in Hospital (Days)</label>
+                    <input type="number" id="field-e-time" value="5" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Payer Code Matrix</label>
+                    <input type="text" id="field-e-payer" value="MD" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Outpatient Visits</label>
+                    <input type="number" id="field-e-out" value="0" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Emergency Visits</label>
+                    <input type="number" id="field-e-emerg" value="0" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Inpatient Visits</label>
+                    <input type="number" id="field-e-in" value="1" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Med Change Status</label>
+                    <input type="text" id="field-e-change" value="No" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Diabetes Meds</label>
+                    <input type="text" id="field-e-diab" value="Yes" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-500 mb-1">Readmitted Flag</label>
+                    <input type="text" id="field-e-readm" value=">30" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-encounter').close()" class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700">Commit Log Entry</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="modal-diagnosis" class="rounded-xl shadow-2xl p-6 w-full max-w-md backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm animate-fadeIn">
+        <form id="form-diagnosis" method="dialog" class="space-y-4">
+            <h3 id="diagnosis-modal-title" class="text-lg font-bold text-indigo-950 border-b pb-2">Add Diagnostic Profile Entry</h3>
+            <input type="hidden" id="field-d-id">
+            <div id="wrapper-d-encounter">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Internal Encounter Link ID</label>
+                <input type="number" id="field-d-encounter-id" required class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="1">
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Num Labs</label>
+                    <input type="number" id="field-d-labs" value="52" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Num Procs</label>
+                    <input type="number" id="field-d-procs" value="1" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Num Meds</label>
+                    <input type="number" id="field-d-meds" value="21" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Diag Code 1</label>
+                    <input type="text" id="field-d-diag1" value="414" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Diag Code 2</label>
+                    <input type="text" id="field-d-diag2" value="250" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Diag Code 3</label>
+                    <input type="text" id="field-d-diag3" value="401" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Total Diag Count</label>
+                    <input type="number" id="field-d-numdiag" value="3" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">Max Glu Serum</label>
+                    <input type="text" id="field-d-glu" value="None" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 mb-1">A1C Result Status</label>
+                    <input type="text" id="field-d-a1c" value=">7" class="w-full border p-1.5 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-diagnosis').close()" class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700">Save Diagnostic Metrics</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="modal-medication" class="rounded-xl shadow-2xl p-6 w-full max-w-md backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm animate-fadeIn">
+        <form id="form-medication" method="dialog" class="space-y-4">
+            <h3 id="medication-modal-title" class="text-lg font-bold text-indigo-950 border-b pb-2">Log Medication Matrix</h3>
+            <input type="hidden" id="field-m-id">
+            <div id="wrapper-m-encounter">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Internal Encounter Link ID</label>
+                <input type="number" id="field-m-encounter-id" required class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="1">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Metformin Delivery</label>
+                    <select id="field-m-metformin" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="No">No</option>
+                        <option value="Steady" selected>Steady</option>
+                        <option value="Up">Up</option>
+                        <option value="Down">Down</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Glipizide Delivery</label>
+                    <select id="field-m-glipizide" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="No" selected>No</option>
+                        <option value="Steady">Steady</option>
+                        <option value="Up">Up</option>
+                        <option value="Down">Down</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Insulin Status</label>
+                    <select id="field-m-insulin" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="No">No</option>
+                        <option value="Steady" selected>Steady</option>
+                        <option value="Up">Up</option>
+                        <option value="Down">Down</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Glyburide Delivery</label>
+                    <select id="field-m-glyburide" class="w-full border p-2 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="No">No</option>
+                        <option value="Steady" selected>Steady</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-2 rounded-lg text-[11px] text-slate-500 font-mono">
+                * Note: Remaining drug matrices auto-initialize to standard values ("No") upon core system storage matching Phase 4 criteria.
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-medication').close()" class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700">Store Core Adjustments</button>
+            </div>
+        </form>
+    </dialog>
+
+
+    <script>
+        const BASE_API = "https://hospital-ncnw.onrender.com";
+        let activeTab = "patients";
+
+        // Global Visual Feedback Loading System Hooks
+        function showProcessing(text = "Communicating with APIs...") {
+            Swal.fire({
+                title: 'Data Stream Pending',
+                text: text,
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+        }
+
+        // Real-Time Interface Matrix Filter Engine 
+        function executeSearchFilter() {
+            const query = document.getElementById('global-search').value.toLowerCase().trim();
+            const badge = document.getElementById('search-badge');
+            
+            // Targeted body workspace matching active session channel context
+            const activeBody = document.querySelector(`#panel-${activeTab} .data-rows-target`);
+            if (!activeBody) return;
+
+            const rows = activeBody.getElementsByTagName('tr');
+            let matchCount = 0;
+
+            // Handle badge visibility state
+            if (query === "") {
+                badge.classList.add('hidden');
+            } else {
+                badge.classList.remove('hidden');
+            }
+
+            for (let i = 0; i < rows.length; i++) {
+                // Skip placeholder notice rows matching zero-records checks
+                if (rows[i].cells.length === 1 && rows[i].getAttribute('data-system-ignore')) continue;
+
+                const textContent = rows[i].textContent.toLowerCase();
+                if (textContent.includes(query)) {
+                    rows[i].classList.remove('hidden');
+                    matchCount++;
+                } else {
+                    rows[i].classList.add('hidden');
+                }
+            }
+
+            // Clean fallback handling if filtered views reveal empty results arrays
+            const existingFallback = document.getElementById(`fallback-row-${activeTab}`);
+            if (existingFallback) existingFallback.remove();
+
+            if (matchCount === 0 && query !== "" && rows.length > 0) {
+                const totalColumns = document.querySelector(`#panel-${activeTab} table th`) ? document.querySelectorAll(`#panel-${activeTab} table th`).length : 5;
+                const fallbackRow = document.createElement('tr');
+                fallbackRow.id = `fallback-row-${activeTab}`;
+                fallbackRow.setAttribute('data-system-ignore', 'true');
+                fallbackRow.innerHTML = `<td colspan="${totalColumns}" class="px-6 py-8 text-center text-slate-400 font-medium"><i class="fa-solid fa-box-open mr-2"></i> No active structural records match your current filter query.</td>`;
+                activeBody.appendChild(fallbackRow);
+            }
+        }
+
+        // Modular Tab Route Navigator
+        function switchTab(tabName) {
+            activeTab = tabName;
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+            
+            // Set styles for navigation menu indicators
+            document.querySelectorAll('#session-tabs button').forEach(btn => {
+                btn.className = "tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900";
+                btn.querySelector('i.fa-chevron-right').classList.add('opacity-0');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            activeBtn.className = "tab-transition w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-semibold bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600";
+            activeBtn.querySelector('i.fa-chevron-right').classList.remove('opacity-0');
+
+            // Reset current matrix parameters on view redirection
+            document.getElementById('global-search').value = "";
+            document.getElementById('search-badge').classList.add('hidden');
+
+            // Conditional route array dispatch triggers
+            if(tabName === 'patients') loadPatients();
+            if(tabName === 'encounters') loadEncounters();
+            if(tabName === 'diagnoses') loadDiagnoses();
+            if(tabName === 'medications') loadMedications();
+        }
+
+        // ==========================================
+        // MODULE PHASE 1: PATIENTS ARRAY CONTROL
+        // ==========================================
+        function loadPatients() {
+            fetch(`${BASE_API}/api/patients`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('table-patients-body');
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = `<tr data-system-ignore="true"><td colspan="5" class="px-6 py-6 text-center text-slate-400">No matching system data records populated.</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = data.map(p => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-4 font-mono font-bold text-indigo-900">#${p.id}</td>
+                            <td class="px-6 py-4 font-medium text-slate-900">${p.patientNbr}</td>
+                            <td class="px-6 py-4 text-slate-600">${p.race || 'Unspecified'}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">${p.gender}</span>
+                                <span class="text-xs text-slate-500 ml-1">${p.age}</span>
+                            </td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <button onclick="editPatient(${p.id})" class="text-indigo-600 hover:text-indigo-900 text-xs font-semibold"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteRecord('patients', ${p.id}, loadPatients)" class="text-rose-600 hover:text-rose-900 text-xs font-semibold"><i class="fa-solid fa-trash"></i> Drop</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    executeSearchFilter();
+                }).catch(err => console.error("Error connecting structural logs:", err));
+        }
+
+        function openPatientModal(id = null) {
+            const form = document.getElementById('form-patient');
+            form.reset();
+            document.getElementById('field-p-id').value = id || '';
+            document.getElementById('patient-modal-title').innerText = id ? "Modify Demographics Record" : "Register Patient Profile";
+            document.getElementById('modal-patient').showModal();
+        }
+
+        function editPatient(id) {
+            showProcessing();
+            fetch(`${BASE_API}/api/patients/${id}`)
+                .then(res => res.json())
+                .then(p => {
+                    Swal.close();
+                    openPatientModal(p.id);
+                    document.getElementById('field-p-nbr').value = p.patientNbr;
+                    document.getElementById('field-p-race').value = p.race;
+                    document.getElementById('field-p-gender').value = p.gender;
+                    document.getElementById('field-p-age').value = p.age;
+                    document.getElementById('field-p-weight').value = p.weight;
+                });
+        }
+
+        document.getElementById('form-patient').onsubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('field-p-id').value;
+            const payload = {
+                patientNbr: parseInt(document.getElementById('field-p-nbr').value),
+                race: document.getElementById('field-p-race').value,
+                gender: document.getElementById('field-p-gender').value,
+                age: document.getElementById('field-p-age').value,
+                weight: document.getElementById('field-p-weight').value
+            };
+            const method = id ? 'PUT' : 'POST';
+            const endpoint = id ? `${BASE_API}/api/patients/${id}` : `${BASE_API}/api/patients`;
+
+            showProcessing("Syncing structural database blocks...");
+            fetch(endpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if(!res.ok) throw new Error();
+                document.getElementById('modal-patient').close();
+                Swal.fire('Completed', 'Patient data structured successfully.', 'success');
+                loadPatients();
+            }).catch(() => Swal.fire('Error Connection Failed', 'Review entry values or target constraints.', 'error'));
+        };
+
+        // ==========================================
+        // MODULE PHASE 2: ENCOUNTERS ARRAY CONTROL
+        // ==========================================
+        function loadEncounters() {
+            fetch(`${BASE_API}/api/encounters`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('table-encounters-body');
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = `<tr data-system-ignore="true"><td colspan="5" class="px-6 py-6 text-center text-slate-400">No admission stay arrays cataloged.</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = data.map(e => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-4 font-mono text-xs font-bold text-indigo-950">Enc ID: ${e.encounterId} <div class="text-[10px] text-slate-400">Internal Link: #${e.id}</div></td>
+                            <td class="px-6 py-4 font-medium">${e.medicalSpecialty || 'General Practice'}</td>
+                            <td class="px-6 py-4 text-slate-600 font-mono">${e.timeInHospital} Days (${e.payerCode || 'N/A'})</td>
+                            <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-xs font-semibold ${e.diabetesMed==='Yes'?'bg-amber-100 text-amber-800':'bg-slate-100 text-slate-600'}">${e.diabetesMed}</span></td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <button onclick="editEncounter(${e.id})" class="text-indigo-600 hover:text-indigo-900 text-xs font-semibold"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteRecord('encounters', ${e.id}, loadEncounters)" class="text-rose-600 hover:text-rose-900 text-xs font-semibold"><i class="fa-solid fa-trash"></i> Drop</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    executeSearchFilter();
+                });
+        }
+
+        function openEncounterModal(id = null) {
+            document.getElementById('form-encounter').reset();
+            document.getElementById('field-e-id').value = id || '';
+            document.getElementById('wrapper-e-patient').style.display = id ? 'none' : 'block';
+            document.getElementById('encounter-modal-title').innerText = id ? "Modify Stay Details" : "Log Stay Entry";
+            document.getElementById('modal-encounter').showModal();
+        }
+
+        function editEncounter(id) {
+            showProcessing();
+            fetch(`${BASE_API}/api/encounters/${id}`)
+                .then(res => res.json())
+                .then(e => {
+                    Swal.close();
+                    openEncounterModal(e.id);
+                    document.getElementById('field-e-nbr').value = e.encounterId;
+                    document.getElementById('field-e-specialty').value = e.medicalSpecialty;
+                    document.getElementById('field-e-adm').value = e.admissionTypeId;
+                    document.getElementById('field-e-dis').value = e.dischargeDispositionId;
+                    document.getElementById('field-e-src').value = e.admissionSourceId;
+                    document.getElementById('field-e-time').value = e.timeInHospital;
+                    document.getElementById('field-e-payer').value = e.payerCode;
+                    document.getElementById('field-e-out').value = e.numberOutpatient;
+                    document.getElementById('field-e-emerg').value = e.numberEmergency;
+                    document.getElementById('field-e-in').value = e.numberInpatient;
+                    document.getElementById('field-e-change').value = e.change;
+                    document.getElementById('field-e-diab').value = e.diabetesMed;
+                    document.getElementById('field-e-readm').value = e.readmitted;
+                });
+        }
+
+        document.getElementById('form-encounter').onsubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('field-e-id').value;
+            const pId = document.getElementById('field-e-patient-id').value;
+            const payload = {
+                encounterId: parseInt(document.getElementById('field-e-nbr').value),
+                medicalSpecialty: document.getElementById('field-e-specialty').value,
+                admissionTypeId: parseInt(document.getElementById('field-e-adm').value),
+                dischargeDispositionId: parseInt(document.getElementById('field-e-dis').value),
+                admissionSourceId: parseInt(document.getElementById('field-e-src').value),
+                timeInHospital: parseInt(document.getElementById('field-e-time').value),
+                payerCode: document.getElementById('field-e-payer').value,
+                numberOutpatient: parseInt(document.getElementById('field-e-out').value),
+                numberEmergency: parseInt(document.getElementById('field-e-emerg').value),
+                numberInpatient: parseInt(document.getElementById('field-e-in').value),
+                change: document.getElementById('field-e-change').value,
+                diabetesMed: document.getElementById('field-e-diab').value,
+                readmitted: document.getElementById('field-e-readm').value
+            };
+            
+            const endpoint = id ? `${BASE_API}/api/encounters/${id}` : `${BASE_API}/api/encounters/patient/${pId}`;
+            const method = id ? 'PUT' : 'POST';
+
+            showProcessing("Writing database blocks...");
+            fetch(endpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if(!res.ok) throw new Error();
+                document.getElementById('modal-encounter').close();
+                Swal.fire('Saved', 'Stay element record updated safely.', 'success');
+                loadEncounters();
+            }).catch(() => Swal.fire('Execution Refused', 'Verify Patient Link ID matches system registers.', 'error'));
+        };
+
+        // ==========================================
+        // MODULE PHASE 3: DIAGNOSES ARRAY CONTROL
+        // ==========================================
+        function loadDiagnoses() {
+            fetch(`${BASE_API}/api/diagnoses`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('table-diagnoses-body');
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = `<tr data-system-ignore="true"><td colspan="5" class="px-6 py-6 text-center text-slate-400">No diagnosis profiles located.</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = data.map(d => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-4 font-mono font-bold">#${d.id}</td>
+                            <td class="px-6 py-4 font-medium text-slate-700">${d.numLabProcedures} Labs <span class="text-slate-400 text-xs">/ ${d.numMedications} Meds</span></td>
+                            <td class="px-6 py-4 text-xs font-mono font-semibold text-indigo-950">${d.diag1 || '-'} | ${d.diag2 || '-'} | ${d.diag3 || '-'}</td>
+                            <td class="px-6 py-4"><span class="bg-indigo-100 text-indigo-900 text-xs font-bold px-2 py-1 rounded">${d.a1cResult}</span></td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <button onclick="editDiagnosis(${d.id})" class="text-indigo-600 hover:text-indigo-900 text-xs font-semibold"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteRecord('diagnoses', ${d.id}, loadDiagnoses)" class="text-rose-600 hover:text-rose-900 text-xs font-semibold"><i class="fa-solid fa-trash"></i> Drop</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    executeSearchFilter();
+                });
+        }
+
+        function openDiagnosisModal(id = null) {
+            document.getElementById('form-diagnosis').reset();
+            document.getElementById('field-d-id').value = id || '';
+            document.getElementById('wrapper-d-encounter').style.display = id ? 'none' : 'block';
+            document.getElementById('diagnosis-modal-title').innerText = id ? "Update Diagnostic Profiles" : "Add Diagnostic Profile Entry";
+            document.getElementById('modal-diagnosis').showModal();
+        }
+
+        function editDiagnosis(id) {
+            showProcessing();
+            fetch(`${BASE_API}/api/diagnoses/${id}`)
+                .then(res => res.json())
+                .then(d => {
+                    Swal.close();
+                    openDiagnosisModal(d.id);
+                    document.getElementById('field-d-labs').value = d.numLabProcedures;
+                    document.getElementById('field-d-procs').value = d.numProcedures;
+                    document.getElementById('field-d-meds').value = d.numMedications;
+                    document.getElementById('field-d-diag1').value = d.diag1;
+                    document.getElementById('field-d-diag2').value = d.diag2;
+                    document.getElementById('field-d-diag3').value = d.diag3;
+                    document.getElementById('field-d-numdiag').value = d.numberDiagnoses;
+                    document.getElementById('field-d-glu').value = d.maxGluSerum;
+                    document.getElementById('field-d-a1c').value = d.a1cResult;
+                });
+        }
+
+        document.getElementById('form-diagnosis').onsubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('field-d-id').value;
+            const eId = document.getElementById('field-d-encounter-id').value;
+            const payload = {
+                numLabProcedures: parseInt(document.getElementById('field-d-labs').value),
+                numProcedures: parseInt(document.getElementById('field-d-procs').value),
+                numMedications: parseInt(document.getElementById('field-d-meds').value),
+                diag1: document.getElementById('field-d-diag1').value,
+                diag2: document.getElementById('field-d-diag2').value,
+                diag3: document.getElementById('field-d-diag3').value,
+                numberDiagnoses: parseInt(document.getElementById('field-d-numdiag').value),
+                maxGluSerum: document.getElementById('field-d-glu').value,
+                a1cResult: document.getElementById('field-d-a1c').value
+            };
+
+            const endpoint = id ? `${BASE_API}/api/diagnoses/${id}` : `${BASE_API}/api/diagnoses/encounter/${eId}`;
+            const method = id ? 'PUT' : 'POST';
+
+            showProcessing();
+            fetch(endpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if(!res.ok) throw new Error();
+                document.getElementById('modal-diagnosis').close();
+                Swal.fire('Success', 'Diagnostic indices appended safely.', 'success');
+                loadDiagnoses();
+            }).catch(() => Swal.fire('Error System Refusal', 'Ensure Encounter Reference ID currently exists.', 'error'));
+        };
+
+        // ==========================================
+        // MODULE PHASE 4: MEDICATIONS ARRAY CONTROL
+        // ==========================================
+        function loadMedications() {
+            fetch(`${BASE_API}/api/medications`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('table-medications-body');
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = `<tr data-system-ignore="true"><td colspan="5" class="px-6 py-6 text-center text-slate-400">No drug therapeutic matrices tracked.</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = data.map(m => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-4 font-mono font-bold">Log ID: #${m.id}</td>
+                            <td class="px-6 py-4 text-slate-600">${m.metformin}</td>
+                            <td class="px-6 py-4 text-slate-600">${m.glipizide}</td>
+                            <td class="px-6 py-4 font-semibold text-indigo-950"><i class="fa-solid fa-syringe text-slate-400 mr-1"></i> ${m.insulin}</td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <button onclick="editMedication(${m.id})" class="text-indigo-600 hover:text-indigo-900 text-xs font-semibold"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteRecord('medications', ${m.id}, loadMedications)" class="text-rose-600 hover:text-rose-900 text-xs font-semibold"><i class="fa-solid fa-trash"></i> Drop</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    executeSearchFilter();
+                });
+        }
+
+        function openMedicationModal(id = null) {
+            document.getElementById('form-medication').reset();
+            document.getElementById('field-m-id').value = id || '';
+            document.getElementById('wrapper-m-encounter').style.display = id ? 'none' : 'block';
+            document.getElementById('medication-modal-title').innerText = id ? "Adjust Medication Matrix" : "Log Medication Profile";
+            document.getElementById('modal-medication').showModal();
+        }
+
+        function editMedication(id) {
+            showProcessing();
+            fetch(`${BASE_API}/api/medications/${id}`)
+                .then(res => res.json())
+                .then(m => {
+                    Swal.close();
+                    openMedicationModal(m.id);
+                    document.getElementById('field-m-metformin').value = m.metformin;
+                    document.getElementById('field-m-glipizide').value = m.glipizide;
+                    document.getElementById('field-m-insulin').value = m.insulin;
+                    document.getElementById('field-m-glyburide').value = m.glyburide || 'No';
+                });
+        }
+
+        document.getElementById('form-medication').onsubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('field-m-id').value;
+            const eId = document.getElementById('field-m-encounter-id').value;
+            
+            const payload = {
+                metformin: document.getElementById('field-m-metformin').value,
+                glipizide: document.getElementById('field-m-glipizide').value,
+                insulin: document.getElementById('field-m-insulin').value,
+                glyburide: document.getElementById('field-m-glyburide').value,
+                repaglinide: "No", nateglinide: "No", chlorpropamide: "No", glimepiride: "No",
+                acetohexamide: "No", tolbutamide: "No", tolazamide: "No", pioglitazone: "No",
+                rosiglitazone: "No", troglitazone: "No", acarbose: "No", miglitol: "No",
+                examide: "No", citoglipton: "No", glyburideMetformin: "No", glipizideMetformin: "No",
+                glimepridePioglitazone: "No", metforminRosiglitazone: "No", metforminPioglitazone: "No"
+            };
+
+            const endpoint = id ? `${BASE_API}/api/medications/${id}` : `${BASE_API}/api/medications/encounter/${eId}`;
+            const method = id ? 'PUT' : 'POST';
+
+            showProcessing();
+            fetch(endpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if(!res.ok) throw new Error();
+                document.getElementById('modal-medication').close();
+                Swal.fire('Committed', 'Antidiabetic matrix schema locked into ledger.', 'success');
+                loadMedications();
+            }).catch(() => Swal.fire('Error Transaction Refused', 'Confirm target encounter identification validation.', 'error'));
+        };
+
+        // ==========================================
+        // GLOBAL SECURE PURGE DELETION CONTROLLER
+        // ==========================================
+        function deleteRecord(modulePath, id, successCallback) {
+            Swal.fire({
+                title: 'Confirm Secure Purge Operation?',
+                text: `Permanent deletion execution pipeline initiated for element reference #${id}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Purge Record'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showProcessing("Executing drop queries...");
+                    fetch(`${BASE_API}/api/${modulePath}/${id}`, { method: 'DELETE' })
+                        .then(res => {
+                            if(!res.ok) throw new Error();
+                            Swal.fire('Purged', 'Structural record reference completely wiped.', 'success');
+                            successCallback();
+                        })
+                        .catch(() => Swal.fire('Error', 'API server rejected request action.', 'error'));
+                }
+            });
+        }
+
+        // Initialize Runtime Sequence Execution
+        window.onload = () => { loadPatients(); };
+    </script>
+</body>
+</html>
