@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HealthPortal — Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-deep:   #1f2a1d;
+    --green-mid:    #2d3a2a;
+    --green-hover:  #2a3827;
+    --green-body:   #4b5b47;
+    --green-head:   #336443;
+    --green-accent: #85AB8B;
+    --green-cta:    #3d5638;
+    --cream:        #f7f9f5;
+    --white:        #ffffff;
+  }
+
+  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--green-deep); -webkit-font-smoothing: antialiased; }
+
+  .page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+
+  /* Left panel */
+  .left {
+    position: relative;
+    background: var(--green-deep);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5rem 3rem;
+    overflow: hidden;
+  }
+  .left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 80% 20%, rgba(133,171,139,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 10% 90%, rgba(61,86,56,0.45) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .left-logo {
+    position: relative; z-index: 1;
+    font-size: 1.2rem; font-weight: 600; color: var(--green-accent);
+    letter-spacing: -0.02em;
+  }
+  .left-logo sup { font-size: 0.55rem; }
+  .left-body { position: relative; z-index: 1; }
+  .left-body h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.9rem, 3vw, 3rem);
+    line-height: 1.05; color: var(--white);
+    letter-spacing: -0.03em; margin-bottom: 1.25rem;
+  }
+  .left-body h2 em { font-style: italic; color: var(--green-accent); }
+  .left-body p { color: rgba(255,255,255,0.55); font-size: 0.88rem; line-height: 1.7; max-width: 310px; font-weight: 300; }
+
+  .steps { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 1rem; }
+  .step { display: flex; align-items: flex-start; gap: 0.85rem; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(133,171,139,0.18); border: 1px solid rgba(133,171,139,0.35);
+    color: var(--green-accent); font-size: 0.72rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-text { font-size: 0.82rem; color: rgba(255,255,255,0.65); line-height: 1.5; padding-top: 0.3rem; }
+
+  /* Right panel */
+  .right { display: flex; align-items: flex-start; justify-content: center; padding: 2.5rem 1.5rem; background: var(--cream); overflow-y: auto; }
+
+  .card { width: 100%; max-width: 420px; animation: fadeUp .5s ease both; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+  .card-header { margin-bottom: 2rem; }
+  .card-header h1 { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--green-head); letter-spacing: -0.03em; line-height: 1.1; }
+  .card-header p { margin-top: 0.5rem; font-size: 0.875rem; color: var(--green-body); font-weight: 300; }
+  .card-header p a { color: var(--green-cta); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green-accent); transition: opacity .2s; }
+  .card-header p a:hover { opacity: 0.7; }
+
+  /* Form grid */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+  .field { margin-bottom: 1rem; }
+  .field.full { grid-column: 1 / -1; }
+
+  label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--green-body); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.35rem; }
+
+  input[type="email"], input[type="password"], input[type="text"], input[type="date"], input[type="number"], select {
+    width: 100%; padding: 0.72rem 0.9rem;
+    border: 1.5px solid rgba(61,86,56,0.2); border-radius: 10px;
+    background: var(--white); font-family: 'DM Sans', sans-serif;
+    font-size: 0.87rem; color: var(--green-deep); outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    appearance: none; -webkit-appearance: none;
+  }
+  input:focus, select:focus {
+    border-color: var(--green-accent);
+    box-shadow: 0 0 0 3px rgba(133,171,139,0.18);
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5b47' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.9rem center; padding-right: 2.2rem; }
+
+  .input-wrap { position: relative; }
+  .toggle-pw { position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--green-body); opacity: 0.5; transition: opacity .2s; display: flex; align-items: center; }
+  .toggle-pw:hover { opacity: 1; }
+
+  .alert { border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.82rem; font-weight: 500; margin-bottom: 1rem; align-items: center; gap: 0.5rem; display: none; }
+  .alert.error   { background: #fdf0f0; color: #b91c1c; border: 1px solid #fca5a5; display: flex; }
+  .alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; display: flex; }
+  .alert.hidden  { display: none !important; }
+
+  .btn-primary {
+    width: 100%; padding: 0.85rem;
+    background: var(--green-deep); color: var(--white);
+    border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: background .2s, transform .15s;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    margin-top: 1.2rem; letter-spacing: -0.01em;
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--green-hover); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
+  .btn-primary.loading .spinner { display: block; }
+  .btn-primary.loading .btn-text { opacity: 0.7; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-label {
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--green-accent); font-weight: 600;
+    margin: 1.5rem 0 0.75rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(133,171,139,0.25);
+  }
+
+  @media (max-width: 768px) {
+    .page { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .right { min-height: 100vh; padding: 2rem 1.25rem; }
+    .card { max-width: 100%; }
+    .form-grid { grid-template-columns: 1fr; }
+    .field.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="left">
+    <div class="left-logo">HealthPortal<sup>™</sup></div>
+    <div class="left-body">
+      <h2>Start your<br /><em>health journey.</em></h2>
+      <p>Create your secure patient profile in under a minute and get access to your full clinical history.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Fill in your personal & clinical details</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Your unique patient number is assigned automatically</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Log in and access your complete dashboard</div></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="card">
+      <div class="card-header">
+        <h1>Create account.</h1>
+        <p>Already registered? <a href="login.html">Sign in here</a></p>
+      </div>
+
+      <div class="alert" id="alertBox">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="alertMsg"></span>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="section-label">Personal Details</div>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="Allison Hill" required />
+          </div>
+          <div class="field">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" required />
+          </div>
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="31" min="0" max="130" required />
+          </div>
+          <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" required>
+              <option value="">Select…</option>
+              <option>Female</option>
+              <option>Male</option>
+              <option>Non-binary</option>
+              <option>Other</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="race">Ethnicity / Race</label>
+            <select id="race">
+              <option value="">Select…</option>
+              <option>Caucasian</option>
+              <option>Asian</option>
+              <option>African American</option>
+              <option>Hispanic</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="address">Address</label>
+            <input type="text" id="address" placeholder="123 Main Street, City" />
+          </div>
+          <div class="field">
+            <label for="weight">Weight</label>
+            <input type="text" id="weight" placeholder="68kg" />
+          </div>
+          <div class="field">
+            <label for="patientNbr">Patient Number</label>
+            <input type="number" id="patientNbr" placeholder="Auto or enter" />
+          </div>
+        </div>
+
+        <div class="section-label">Account Credentials</div>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="you@healthportal.com" autocomplete="email" required />
+          </div>
+          <div class="field full">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password" required />
+              <button type="button" class="toggle-pw" onclick="togglePw('password','eye1')" aria-label="Toggle password">
+                <svg id="eye1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="regBtn">
+          <div class="spinner"></div>
+          <span class="btn-text">Create My Account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://hospital-ncnw.onrender.com/api';
+
+  // If already logged in, go to dashboard
+  (function() {
+    if (sessionStorage.getItem('hp_session')) window.location.href = 'patient.html';
+  })();
+
+  function togglePw(inputId, iconId) {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(iconId);
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  function showAlert(msg, type) {
+    const box = document.getElementById('alertBox');
+    box.className = 'alert ' + type;
+    document.getElementById('alertMsg').textContent = msg;
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideAlert() {
+    document.getElementById('alertBox').className = 'alert hidden';
+  }
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideAlert();
+
+    const fullName   = document.getElementById('fullName').value.trim();
+    const email      = document.getElementById('email').value.trim();
+    const password   = document.getElementById('password').value;
+    const dob        = document.getElementById('dob').value;
+    const age        = document.getElementById('age').value;
+    const gender     = document.getElementById('gender').value;
+    const race       = document.getElementById('race').value;
+    const address    = document.getElementById('address').value.trim();
+    const weight     = document.getElementById('weight').value.trim();
+    const patientNbr = document.getElementById('patientNbr').value;
+
+    if (!fullName || !email || !password || !dob || !age || !gender) {
+      showAlert('Please fill in all required fields.', 'error'); return;
+    }
+    if (password.length < 8) {
+      showAlert('Password must be at least 8 characters.', 'error'); return;
+    }
+
+    const btn = document.getElementById('regBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const payload = {
+      fullName, email, password,
+      dob, age: String(age), gender,
+      race: race || 'Unknown',
+      address: address || '',
+      weight: weight || '',
+      patientNbr: patientNbr ? Number(patientNbr) : Math.floor(1000000 + Math.random() * 9000000)
+    };
+
+    try {
+      const res = await fetch(`${API}/patients/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok || res.status === 201) {
+        showAlert('Account created! Redirecting to login…', 'success');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+      } else {
+        const msg = data.message || data.error || 'Registration failed. Please try again.';
+        showAlert(msg, 'error');
+      }
+    } catch (err) {
+      showAlert('Cannot reach the server. Please try again.', 'error');
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

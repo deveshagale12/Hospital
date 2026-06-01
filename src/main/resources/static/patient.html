@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HealthPortal — My Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green-deep:   #1f2a1d;
+  --green-mid:    #2d3a2a;
+  --green-hover:  #2a3827;
+  --green-body:   #4b5b47;
+  --green-head:   #336443;
+  --green-accent: #85AB8B;
+  --green-cta:    #3d5638;
+  --green-light:  #eef5ec;
+  --green-pale:   #f3f8f2;
+  --cream:        #f7f9f5;
+  --white:        #ffffff;
+  --sidebar-w:    260px;
+  --header-h:     64px;
+}
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--green-deep); -webkit-font-smoothing: antialiased; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--green-deep);
+  display: flex; flex-direction: column;
+  z-index: 100;
+  transition: transform .35s cubic-bezier(.22,1,.36,1);
+}
+.sidebar-logo {
+  padding: 1.5rem 1.5rem 1rem;
+  font-size: 1.1rem; font-weight: 600; color: var(--green-accent);
+  letter-spacing: -0.02em; border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.sidebar-logo sup { font-size: 0.5rem; }
+.sidebar-user {
+  padding: 1rem 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sidebar-user .avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(133,171,139,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 600; color: var(--green-accent);
+  margin-bottom: 0.6rem;
+}
+.sidebar-user .name { font-size: 0.88rem; font-weight: 600; color: #fff; }
+.sidebar-user .nbr  { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 0.1rem; }
+
+nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+.nav-section { padding: 0.5rem 1.5rem 0.25rem; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 600; margin-top: 0.5rem; }
+.nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 1.5rem; cursor: pointer;
+  font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.55);
+  border-left: 3px solid transparent;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--green-accent); border-left-color: var(--green-accent); background: rgba(133,171,139,0.08); }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.logout-btn {
+  width: 100%; padding: 0.6rem 1rem;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; cursor: pointer; transition: background .2s, color .2s;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.logout-btn:hover { background: rgba(255,80,80,0.12); color: #fca5a5; border-color: rgba(255,80,80,0.2); }
+
+/* ── Top Header ── */
+.header {
+  position: fixed; top: 0;
+  left: var(--sidebar-w); right: 0;
+  height: var(--header-h);
+  background: rgba(247,249,245,0.9); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(61,86,56,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 50;
+  transition: left .35s cubic-bezier(.22,1,.36,1);
+}
+.header-left { display: flex; align-items: center; gap: 0.75rem; }
+.hamburger {
+  display: none; background: none; border: none; cursor: pointer;
+  color: var(--green-deep); padding: 0.25rem;
+}
+.hamburger svg { width: 22px; height: 22px; }
+.page-title { font-size: 1rem; font-weight: 600; color: var(--green-deep); letter-spacing: -0.02em; }
+.header-right { display: flex; align-items: center; gap: 1rem; }
+.patient-badge {
+  font-size: 0.75rem; padding: 0.3rem 0.7rem;
+  background: var(--green-light); color: var(--green-cta);
+  border-radius: 20px; font-weight: 600;
+}
+
+/* ── Main Content ── */
+.main {
+  margin-left: var(--sidebar-w);
+  padding-top: var(--header-h);
+  min-height: 100vh;
+  transition: margin-left .35s cubic-bezier(.22,1,.36,1);
+}
+.content { padding: 2rem; max-width: 1100px; }
+
+/* ── Sections ── */
+.section { display: none; }
+.section.active { display: block; animation: fadeUp .35s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+.section-head { margin-bottom: 1.75rem; }
+.section-head h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--green-head); letter-spacing: -0.03em; }
+.section-head p  { font-size: 0.875rem; color: var(--green-body); margin-top: 0.35rem; font-weight: 300; }
+
+/* ── Profile Card ── */
+.profile-hero {
+  background: var(--green-deep);
+  border-radius: 16px; padding: 2rem;
+  display: flex; align-items: center; gap: 1.75rem;
+  margin-bottom: 1.5rem; position: relative; overflow: hidden;
+}
+.profile-hero::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 80% at 90% 50%, rgba(133,171,139,0.15) 0%, transparent 70%);
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(133,171,139,0.2);
+  border: 2px solid rgba(133,171,139,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.75rem; color: var(--green-accent);
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.profile-info { position: relative; z-index: 1; }
+.profile-info h3 { font-size: 1.35rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.profile-info .meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.meta-tag {
+  font-size: 0.72rem; padding: 0.2rem 0.6rem;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  border-radius: 20px; font-weight: 500;
+}
+
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.info-card {
+  background: var(--white); border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid rgba(61,86,56,0.1);
+}
+.info-card .ic-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green-body); opacity: 0.6; margin-bottom: 0.35rem; font-weight: 600; }
+.info-card .ic-value { font-size: 0.95rem; font-weight: 600; color: var(--green-deep); }
+
+/* Edit Profile Button */
+.btn-outline {
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid rgba(61,86,56,0.25); border-radius: 8px;
+  background: transparent; color: var(--green-cta); font-family: 'DM Sans',sans-serif;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s;
+}
+.btn-outline:hover { background: var(--green-light); border-color: var(--green-accent); }
+
+/* ── Stats row ── */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card {
+  background: var(--white); border-radius: 12px; padding: 1.25rem;
+  border: 1px solid rgba(61,86,56,0.1);
+  display: flex; flex-direction: column; gap: 0.4rem;
+}
+.stat-card .sc-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--green-head); line-height: 1; }
+.stat-card .sc-lbl { font-size: 0.75rem; color: var(--green-body); font-weight: 500; }
+.stat-card .sc-badge {
+  margin-top: 0.25rem; display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 20px; width: fit-content; font-weight: 600;
+}
+.badge-green  { background: #dcfce7; color: #15803d; }
+.badge-orange { background: #fff7ed; color: #c2410c; }
+.badge-blue   { background: #eff6ff; color: #1d4ed8; }
+.badge-red    { background: #fef2f2; color: #b91c1c; }
+
+/* ── Table ── */
+.table-wrap { background: var(--white); border-radius: 12px; border: 1px solid rgba(61,86,56,0.1); overflow: hidden; }
+.table-header { padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(61,86,56,0.08); }
+.table-header h3 { font-size: 0.95rem; font-weight: 600; color: var(--green-deep); }
+.btn-sm {
+  padding: 0.4rem 0.85rem; background: var(--green-deep); color: var(--white);
+  border: none; border-radius: 8px; font-family: 'DM Sans',sans-serif;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background .2s;
+}
+.btn-sm:hover { background: var(--green-hover); }
+.btn-sm.secondary { background: var(--green-light); color: var(--green-cta); }
+.btn-sm.secondary:hover { background: #d8efd3; }
+.btn-sm.danger { background: #fef2f2; color: #b91c1c; }
+.btn-sm.danger:hover { background: #fee2e2; }
+
+table { width: 100%; border-collapse: collapse; }
+th { padding: 0.65rem 1rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-body); font-weight: 600; background: var(--green-pale); border-bottom: 1px solid rgba(61,86,56,0.08); }
+td { padding: 0.75rem 1rem; font-size: 0.84rem; color: var(--green-deep); border-bottom: 1px solid rgba(61,86,56,0.06); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--green-pale); }
+.td-actions { display: flex; gap: 0.4rem; }
+
+/* ── Loading / Empty ── */
+.skeleton { background: linear-gradient(90deg, var(--green-pale) 25%, #e8f0e6 50%, var(--green-pale) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 6px; height: 14px; margin: 0.3rem 0; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.empty-state { padding: 3rem; text-align: center; }
+.empty-state svg { width: 40px; height: 40px; color: var(--green-accent); opacity: 0.4; margin: 0 auto 0.75rem; display: block; }
+.empty-state p { font-size: 0.875rem; color: var(--green-body); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(31,42,29,0.5); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 16px;
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  animation: popIn .3s ease;
+}
+@keyframes popIn { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+.modal-head {
+  padding: 1.5rem 1.5rem 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-head h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--green-head); }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--green-body); opacity: 0.5; transition: opacity .2s; }
+.modal-close:hover { opacity: 1; }
+.modal-body { padding: 1.25rem 1.5rem 1.5rem; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.modal-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.modal-field.full { grid-column: 1 / -1; }
+.modal-field label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--green-body); font-weight: 600; }
+.modal-field input, .modal-field select {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid rgba(61,86,56,0.2); border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--green-deep);
+  background: var(--cream); outline: none; transition: border-color .2s;
+  appearance: none;
+}
+.modal-field input:focus, .modal-field select:focus { border-color: var(--green-accent); }
+.modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
+.btn-primary-sm {
+  padding: 0.6rem 1.25rem; background: var(--green-deep); color: var(--white);
+  border: none; border-radius: 8px; font-family: 'DM Sans',sans-serif;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background .2s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.btn-primary-sm:hover { background: var(--green-hover); }
+.btn-primary-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+.modal-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
+.saving .modal-spinner { display: block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300;
+  padding: 0.75rem 1.25rem; border-radius: 10px;
+  font-size: 0.84rem; font-weight: 500;
+  display: none; align-items: center; gap: 0.5rem;
+  animation: slideIn .3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+.toast.show { display: flex; }
+.toast.success { background: #1f2a1d; color: #86efac; }
+.toast.error   { background: #7f1d1d; color: #fca5a5; }
+@keyframes slideIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* Overlay for mobile sidebar */
+.sb-overlay {
+  display: none; position: fixed; inset: 0; z-index: 90;
+  background: rgba(31,42,29,0.4); backdrop-filter: blur(2px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay-visible { display: block; }
+  .header { left: 0; }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; align-items: center; }
+}
+@media (max-width: 600px) {
+  .content { padding: 1.25rem; }
+  .profile-hero { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-field.full { grid-column: 1; }
+  table { font-size: 0.78rem; }
+  th, td { padding: 0.55rem 0.7rem; }
+  .td-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay for mobile -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">HealthPortal<sup>™</sup></div>
+  <div class="sidebar-user">
+    <div class="avatar" id="sbAvatar">–</div>
+    <div class="name" id="sbName">Loading…</div>
+    <div class="nbr" id="sbNbr"></div>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showSection('overview',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showSection('profile',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      My Profile
+    </div>
+    <div class="nav-section">Clinical</div>
+    <div class="nav-item" onclick="showSection('encounters',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Encounters
+    </div>
+    <div class="nav-item" onclick="showSection('diagnoses',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Diagnoses
+    </div>
+    <div class="nav-item" onclick="showSection('medications',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Medications
+    </div>
+    <div class="nav-item" onclick="showSection('readmissions',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Readmissions
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="logout()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="page-title" id="headerTitle">Dashboard</span>
+  </div>
+  <div class="header-right">
+    <div class="patient-badge" id="headerBadge">Loading…</div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="main">
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="sec-overview">
+      <div class="section-head">
+        <h2 id="welcomeName">Welcome back.</h2>
+        <p>Here's a summary of your clinical activity.</p>
+      </div>
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="sc-num" id="statEncounters">—</div><div class="sc-lbl">Total Encounters</div></div>
+        <div class="stat-card"><div class="sc-num" id="statDiagnoses">—</div><div class="sc-lbl">Diagnoses Logged</div></div>
+        <div class="stat-card"><div class="sc-num" id="statMeds">—</div><div class="sc-lbl">Medication Entries</div></div>
+        <div class="stat-card"><div class="sc-num" id="statReadmit">—</div><div class="sc-lbl">Readmission Records</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Recent Encounters</h3></div>
+        <div id="overviewTable"><div class="empty-state"><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="section" id="sec-profile">
+      <div class="section-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+        <div><h2>My Profile</h2><p>Your personal and clinical details.</p></div>
+        <button class="btn-outline" onclick="openModal('editProfile')">Edit Profile</button>
+      </div>
+      <div class="profile-hero">
+        <div class="profile-avatar" id="proAvatar">—</div>
+        <div class="profile-info">
+          <h3 id="proName">—</h3>
+          <div class="meta" id="proMeta"></div>
+        </div>
+      </div>
+      <div class="info-grid" id="proInfoGrid"></div>
+    </div>
+
+    <!-- ── ENCOUNTERS ── -->
+    <div class="section" id="sec-encounters">
+      <div class="section-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+        <div><h2>Encounters</h2><p>All hospital visit sessions linked to your record.</p></div>
+        <button class="btn-sm" onclick="openModal('addEncounter')">+ New Encounter</button>
+      </div>
+      <div class="table-wrap">
+        <div id="encountersTable"><div class="empty-state"><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── DIAGNOSES ── -->
+    <div class="section" id="sec-diagnoses">
+      <div class="section-head">
+        <h2>Diagnoses</h2>
+        <p>ICD-9 clinical diagnosis records tied to your encounters.</p>
+      </div>
+      <div class="table-wrap">
+        <div id="diagnosesTable"><div class="empty-state"><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── MEDICATIONS ── -->
+    <div class="section" id="sec-medications">
+      <div class="section-head">
+        <h2>Medications</h2>
+        <p>Anti-diabetic drug matrix history across all encounters.</p>
+      </div>
+      <div class="table-wrap">
+        <div id="medicationsTable"><div class="empty-state"><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── READMISSIONS ── -->
+    <div class="section" id="sec-readmissions">
+      <div class="section-head">
+        <h2>Readmissions</h2>
+        <p>Risk scoring and readmission tracking by encounter.</p>
+      </div>
+      <div id="readmissionsContent"><div class="empty-state"><p>Loading…</p></div></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ────────── MODALS ────────── -->
+
+<!-- Edit Profile -->
+<div class="modal-overlay" id="modal-editProfile">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Edit Profile</h3>
+      <button class="modal-close" onclick="closeModal('editProfile')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="modal-field full"><label>Full Name</label><input type="text" id="ep-fullName" /></div>
+        <div class="modal-field"><label>Email</label><input type="email" id="ep-email" /></div>
+        <div class="modal-field"><label>Password</label><input type="password" id="ep-password" placeholder="Leave blank to keep" /></div>
+        <div class="modal-field"><label>Address</label><input type="text" id="ep-address" /></div>
+        <div class="modal-field"><label>Date of Birth</label><input type="date" id="ep-dob" /></div>
+        <div class="modal-field"><label>Age</label><input type="number" id="ep-age" /></div>
+        <div class="modal-field"><label>Gender</label>
+          <select id="ep-gender"><option>Female</option><option>Male</option><option>Non-binary</option><option>Other</option></select>
+        </div>
+        <div class="modal-field"><label>Race</label><input type="text" id="ep-race" /></div>
+        <div class="modal-field"><label>Weight</label><input type="text" id="ep-weight" /></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" onclick="closeModal('editProfile')">Cancel</button>
+        <button class="btn-primary-sm" id="saveProfileBtn" onclick="saveProfile()">
+          <div class="modal-spinner" id="saveProfileSpinner"></div>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Encounter -->
+<div class="modal-overlay" id="modal-addEncounter">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>New Encounter</h3>
+      <button class="modal-close" onclick="closeModal('addEncounter')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="modal-field"><label>Encounter ID</label><input type="number" id="enc-encounterId" placeholder="e.g. 10130728" /></div>
+        <div class="modal-field"><label>Medical Specialty</label><input type="text" id="enc-medSpec" placeholder="Cardiology" /></div>
+        <div class="modal-field"><label>Admission Type ID</label><input type="number" id="enc-admTypeId" value="1" /></div>
+        <div class="modal-field"><label>Admission Source ID</label><input type="number" id="enc-admSrcId" value="7" /></div>
+        <div class="modal-field"><label>Discharge Disposition ID</label><input type="number" id="enc-dischId" value="1" /></div>
+        <div class="modal-field"><label>Time in Hospital (days)</label><input type="number" id="enc-time" value="3" /></div>
+        <div class="modal-field"><label>Payer Code</label><input type="text" id="enc-payerCode" placeholder="MC" /></div>
+        <div class="modal-field"><label>Diabetes Med</label>
+          <select id="enc-diabetesMed"><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+        <div class="modal-field"><label>Change Flag</label>
+          <select id="enc-changeFlag"><option value="Ch">Ch</option><option value="No">No</option></select>
+        </div>
+        <div class="modal-field"><label>No. Emergency</label><input type="number" id="enc-numEmerg" value="0" /></div>
+        <div class="modal-field"><label>No. Inpatient</label><input type="number" id="enc-numInp" value="0" /></div>
+        <div class="modal-field"><label>No. Outpatient</label><input type="number" id="enc-numOut" value="0" /></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" onclick="closeModal('addEncounter')">Cancel</button>
+        <button class="btn-primary-sm" id="saveEncBtn" onclick="saveEncounter()">
+          <div class="modal-spinner" id="saveEncSpinner"></div>
+          Save Encounter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://hospital-ncnw.onrender.com/api';
+
+// ── Session ──────────────────────────────────────────────────────────────────
+const raw = sessionStorage.getItem('hp_session');
+if (!raw) { window.location.href = 'login.html'; }
+const SESSION = JSON.parse(raw);
+const PATIENT_ID = SESSION.id;
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+
+// ── Logout ───────────────────────────────────────────────────────────────────
+function logout() {
+  sessionStorage.removeItem('hp_session');
+  window.location.href = 'login.html';
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('sidebar-overlay-visible');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('sidebar-overlay-visible');
+}
+
+// ── Section Nav ───────────────────────────────────────────────────────────────
+const titles = { overview: 'Dashboard', profile: 'My Profile', encounters: 'Encounters', diagnoses: 'Diagnoses', medications: 'Medications', readmissions: 'Readmissions' };
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('headerTitle').textContent = titles[name] || name;
+  closeSidebar();
+  if (name === 'encounters')   loadEncounters();
+  if (name === 'diagnoses')    loadDiagnoses();
+  if (name === 'medications')  loadMedications();
+  if (name === 'readmissions') loadReadmissions();
+  if (name === 'profile')      renderProfile();
+}
+
+// ── Modals ────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById('modal-' + id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (id === 'editProfile') prefillEditProfile();
+}
+function closeModal(id) {
+  document.getElementById('modal-' + id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) { o.classList.remove('open'); document.body.style.overflow = ''; } }));
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+let patientData = null;
+let encountersData = [];
+
+async function init() {
+  // Sidebar user info
+  const initials = SESSION.fullName ? SESSION.fullName.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() : '?';
+  document.getElementById('sbAvatar').textContent = initials;
+  document.getElementById('sbName').textContent = SESSION.fullName || SESSION.email;
+  document.getElementById('sbNbr').textContent = SESSION.patientNbr ? `#${SESSION.patientNbr}` : '';
+  document.getElementById('welcomeName').textContent = `Welcome, ${(SESSION.fullName || '').split(' ')[0] || 'there'}.`;
+  document.getElementById('headerBadge').textContent = SESSION.patientNbr ? `Patient #${SESSION.patientNbr}` : SESSION.email;
+
+  // Load patient record
+  try {
+    const res = await fetch(`${API}/patients/${PATIENT_ID}`);
+    if (res.ok) { patientData = await res.json(); }
+  } catch(_) {}
+
+  await loadOverview();
+}
+
+// ── Overview ─────────────────────────────────────────────────────────────────
+async function loadOverview() {
+  try {
+    const res = await fetch(`${API}/encounters/patient/${PATIENT_ID}`);
+    encountersData = res.ok ? (await res.json()) : [];
+  } catch(_) { encountersData = []; }
+
+  document.getElementById('statEncounters').textContent = encountersData.length;
+
+  // diagnoses count
+  let diagCount = 0, medCount = 0, readCount = 0;
+  for (const enc of encountersData.slice(0,5)) {
+    try {
+      const encId = enc.id || enc.encounterId;
+      const [dr, mr, rr] = await Promise.allSettled([
+        fetch(`${API}/diagnoses/encounter/${encId}`),
+        fetch(`${API}/medications/encounter/${encId}`),
+        fetch(`${API}/readmissions/encounter/${encId}`)
+      ]);
+      if (dr.status === 'fulfilled' && dr.value.ok) diagCount++;
+      if (mr.status === 'fulfilled' && mr.value.ok) medCount++;
+      if (rr.status === 'fulfilled' && rr.value.ok) readCount++;
+    } catch(_) {}
+  }
+  document.getElementById('statDiagnoses').textContent   = diagCount;
+  document.getElementById('statMeds').textContent        = medCount;
+  document.getElementById('statReadmit').textContent     = readCount;
+
+  // Recent encounters table
+  const wrap = document.getElementById('overviewTable');
+  if (!encountersData.length) {
+    wrap.innerHTML = `<div class="empty-state"><p>No encounters yet. Your visit history will appear here.</p></div>`;
+    return;
+  }
+  const rows = encountersData.slice(0,6).map(e => `
+    <tr>
+      <td><strong>#${e.encounterId || e.id}</strong></td>
+      <td>${e.medicalSpecialty || '—'}</td>
+      <td>${e.timeInHospital != null ? e.timeInHospital + ' days' : '—'}</td>
+      <td><span class="stat-card sc-badge ${e.diabetesMed === 'Yes' ? 'badge-orange' : 'badge-green'}" style="padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem;font-weight:600;">${e.diabetesMed || '—'}</span></td>
+    </tr>`).join('');
+  wrap.innerHTML = `<table><thead><tr><th>Encounter ID</th><th>Specialty</th><th>Duration</th><th>Diabetes Med</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ── Profile ───────────────────────────────────────────────────────────────────
+function renderProfile() {
+  const d = patientData || SESSION;
+  const initials = (d.fullName || '').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?';
+  document.getElementById('proAvatar').textContent = initials;
+  document.getElementById('proName').textContent = d.fullName || '—';
+
+  const metaTags = [d.gender, d.race, d.age ? `Age ${d.age}` : null, d.weight].filter(Boolean);
+  document.getElementById('proMeta').innerHTML = metaTags.map(t => `<span class="meta-tag">${t}</span>`).join('');
+
+  const fields = [
+    { label: 'Email', value: d.email },
+    { label: 'Date of Birth', value: d.dob },
+    { label: 'Address', value: d.address },
+    { label: 'Patient Number', value: d.patientNbr ? `#${d.patientNbr}` : '—' },
+    { label: 'Weight', value: d.weight },
+    { label: 'Gender', value: d.gender },
+    { label: 'Race / Ethnicity', value: d.race },
+    { label: 'Age', value: d.age },
+  ];
+  document.getElementById('proInfoGrid').innerHTML = fields.map(f => `
+    <div class="info-card"><div class="ic-label">${f.label}</div><div class="ic-value">${f.value || '—'}</div></div>`).join('');
+}
+
+function prefillEditProfile() {
+  const d = patientData || SESSION;
+  document.getElementById('ep-fullName').value = d.fullName || '';
+  document.getElementById('ep-email').value    = d.email || '';
+  document.getElementById('ep-address').value  = d.address || '';
+  document.getElementById('ep-dob').value      = d.dob || '';
+  document.getElementById('ep-age').value      = d.age || '';
+  document.getElementById('ep-race').value     = d.race || '';
+  document.getElementById('ep-weight').value   = d.weight || '';
+  const gSel = document.getElementById('ep-gender');
+  for (let opt of gSel.options) if (opt.value === d.gender) { opt.selected = true; break; }
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('saveProfileBtn');
+  btn.disabled = true; btn.classList.add('saving');
+  const payload = {
+    patientNbr: patientData?.patientNbr || SESSION.patientNbr,
+    fullName:   document.getElementById('ep-fullName').value.trim(),
+    email:      document.getElementById('ep-email').value.trim(),
+    password:   document.getElementById('ep-password').value || patientData?.password || '',
+    address:    document.getElementById('ep-address').value.trim(),
+    dob:        document.getElementById('ep-dob').value,
+    age:        document.getElementById('ep-age').value,
+    gender:     document.getElementById('ep-gender').value,
+    race:       document.getElementById('ep-race').value.trim(),
+    weight:     document.getElementById('ep-weight').value.trim(),
+  };
+  try {
+    const res = await fetch(`${API}/patients/${PATIENT_ID}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      const updated = await res.json().catch(() => payload);
+      patientData = { ...patientData, ...updated };
+      // Update session name
+      SESSION.fullName = payload.fullName;
+      sessionStorage.setItem('hp_session', JSON.stringify(SESSION));
+      renderProfile();
+      closeModal('editProfile');
+      toast('Profile updated successfully!');
+    } else {
+      toast('Failed to update profile.', 'error');
+    }
+  } catch(_) { toast('Server unreachable.', 'error'); }
+  finally { btn.disabled = false; btn.classList.remove('saving'); }
+}
+
+// ── Encounters ────────────────────────────────────────────────────────────────
+async function loadEncounters() {
+  const wrap = document.getElementById('encountersTable');
+  wrap.innerHTML = `<div class="empty-state"><p>Loading…</p></div>`;
+  try {
+    const res = await fetch(`${API}/encounters/patient/${PATIENT_ID}`);
+    encountersData = res.ok ? await res.json() : [];
+    if (!encountersData.length) {
+      wrap.innerHTML = `<div class="empty-state"><p>No encounters on record yet.</p></div>`; return;
+    }
+    const rows = encountersData.map(e => `
+      <tr>
+        <td><strong>#${e.encounterId || '—'}</strong></td>
+        <td>${e.medicalSpecialty || '—'}</td>
+        <td>${e.admissionTypeId ?? '—'}</td>
+        <td>${e.timeInHospital != null ? e.timeInHospital + ' d' : '—'}</td>
+        <td>${e.payerCode || '—'}</td>
+        <td><span style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:20px;font-weight:600;${e.diabetesMed==='Yes'?'background:#fff7ed;color:#c2410c':'background:#dcfce7;color:#15803d'}">${e.diabetesMed||'—'}</span></td>
+        <td><div class="td-actions">
+          <button class="btn-sm secondary" onclick="viewEncounterDiag(${e.id})">Details</button>
+          <button class="btn-sm danger" onclick="deleteEncounter(${e.id})">Delete</button>
+        </div></td>
+      </tr>`).join('');
+    wrap.innerHTML = `<table><thead><tr><th>Encounter ID</th><th>Specialty</th><th>Admission Type</th><th>Days</th><th>Payer</th><th>Diabetes Med</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(_) { wrap.innerHTML = `<div class="empty-state"><p>Could not load encounters.</p></div>`; }
+}
+
+async function saveEncounter() {
+  const btn = document.getElementById('saveEncBtn');
+  btn.disabled = true; btn.classList.add('saving');
+  const payload = {
+    encounterId:          parseInt(document.getElementById('enc-encounterId').value) || Math.floor(10000000 + Math.random() * 89999999),
+    medicalSpecialty:     document.getElementById('enc-medSpec').value.trim(),
+    admissionTypeId:      parseInt(document.getElementById('enc-admTypeId').value),
+    admissionSourceId:    parseInt(document.getElementById('enc-admSrcId').value),
+    dischargeDispositionId: parseInt(document.getElementById('enc-dischId').value),
+    timeInHospital:       parseInt(document.getElementById('enc-time').value),
+    payerCode:            document.getElementById('enc-payerCode').value.trim(),
+    diabetesMed:          document.getElementById('enc-diabetesMed').value,
+    changeFlag:           document.getElementById('enc-changeFlag').value,
+    numberEmergency:      parseInt(document.getElementById('enc-numEmerg').value),
+    numberInpatient:      parseInt(document.getElementById('enc-numInp').value),
+    numberOutpatient:     parseInt(document.getElementById('enc-numOut').value),
+  };
+  try {
+    const res = await fetch(`${API}/encounters/patient/${PATIENT_ID}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      closeModal('addEncounter');
+      toast('Encounter created!');
+      loadEncounters();
+    } else {
+      toast('Failed to create encounter.', 'error');
+    }
+  } catch(_) { toast('Server unreachable.', 'error'); }
+  finally { btn.disabled = false; btn.classList.remove('saving'); }
+}
+
+async function deleteEncounter(id) {
+  if (!confirm('Delete this encounter and all linked records?')) return;
+  try {
+    const res = await fetch(`${API}/encounters/${id}`, { method: 'DELETE' });
+    if (res.ok) { toast('Encounter deleted.'); loadEncounters(); }
+    else toast('Delete failed.', 'error');
+  } catch(_) { toast('Server unreachable.', 'error'); }
+}
+
+function viewEncounterDiag(encId) {
+  showSection('diagnoses', document.querySelectorAll('.nav-item')[4]);
+  loadDiagnosesByEncounter(encId);
+}
+
+// ── Diagnoses ─────────────────────────────────────────────────────────────────
+async function loadDiagnoses() {
+  const wrap = document.getElementById('diagnosesTable');
+  wrap.innerHTML = `<div class="empty-state"><p>Loading…</p></div>`;
+  if (!encountersData.length) {
+    try {
+      const r = await fetch(`${API}/encounters/patient/${PATIENT_ID}`);
+      if (r.ok) encountersData = await r.json();
+    } catch(_) {}
+  }
+  if (!encountersData.length) {
+    wrap.innerHTML = `<div class="empty-state"><p>No encounters — no diagnoses to show.</p></div>`; return;
+  }
+  const all = [];
+  for (const enc of encountersData) {
+    try {
+      const r = await fetch(`${API}/diagnoses/encounter/${enc.id}`);
+      if (r.ok) { const d = await r.json(); all.push({ ...d, _encId: enc.id, _encExtId: enc.encounterId }); }
+    } catch(_) {}
+  }
+  if (!all.length) { wrap.innerHTML = `<div class="empty-state"><p>No diagnoses recorded yet.</p></div>`; return; }
+  const rows = all.map(d => `
+    <tr>
+      <td><small style="color:var(--green-body)">#${d._encExtId||d._encId}</small></td>
+      <td><strong>${d.diag1||'—'}</strong><br><small>${d.diag1Desc||''}</small></td>
+      <td>${d.diag2||'—'}<br><small>${d.diag2Desc||''}</small></td>
+      <td>${d.diag3||'—'}<br><small>${d.diag3Desc||''}</small></td>
+      <td>${d.numLabProcedures??'—'}</td>
+      <td>${d.numMedications??'—'}</td>
+      <td><span style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:20px;font-weight:600;${d.a1cResult&&d.a1cResult.startsWith('>')? 'background:#fef9c3;color:#713f12':'background:#dcfce7;color:#15803d'}">${d.a1cResult||'—'}</span></td>
+      <td>${d.maxGluSerum||'—'}</td>
+    </tr>`).join('');
+  wrap.innerHTML = `<table><thead><tr><th>Encounter</th><th>Diag 1</th><th>Diag 2</th><th>Diag 3</th><th>Lab Procs</th><th>Meds</th><th>A1c</th><th>Glu Serum</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function loadDiagnosesByEncounter(encId) {
+  const wrap = document.getElementById('diagnosesTable');
+  wrap.innerHTML = `<div class="empty-state"><p>Loading…</p></div>`;
+  try {
+    const r = await fetch(`${API}/diagnoses/encounter/${encId}`);
+    if (!r.ok) { wrap.innerHTML = `<div class="empty-state"><p>No diagnosis for this encounter.</p></div>`; return; }
+    const d = await r.json();
+    wrap.innerHTML = `<table><thead><tr><th>Diag 1</th><th>Diag 2</th><th>Diag 3</th><th>Lab Procs</th><th>Meds</th><th>A1c</th><th>Glu Serum</th></tr></thead><tbody>
+      <tr>
+        <td><strong>${d.diag1||'—'}</strong><br><small>${d.diag1Desc||''}</small></td>
+        <td>${d.diag2||'—'}<br><small>${d.diag2Desc||''}</small></td>
+        <td>${d.diag3||'—'}<br><small>${d.diag3Desc||''}</small></td>
+        <td>${d.numLabProcedures??'—'}</td>
+        <td>${d.numMedications??'—'}</td>
+        <td>${d.a1cResult||'—'}</td>
+        <td>${d.maxGluSerum||'—'}</td>
+      </tr></tbody></table>`;
+  } catch(_) { wrap.innerHTML = `<div class="empty-state"><p>Could not load diagnoses.</p></div>`; }
+}
+
+// ── Medications ───────────────────────────────────────────────────────────────
+async function loadMedications() {
+  const wrap = document.getElementById('medicationsTable');
+  wrap.innerHTML = `<div class="empty-state"><p>Loading…</p></div>`;
+  if (!encountersData.length) {
+    try { const r = await fetch(`${API}/encounters/patient/${PATIENT_ID}`); if (r.ok) encountersData = await r.json(); } catch(_) {}
+  }
+  if (!encountersData.length) { wrap.innerHTML = `<div class="empty-state"><p>No encounters on record.</p></div>`; return; }
+
+  const all = [];
+  for (const enc of encountersData) {
+    try {
+      const r = await fetch(`${API}/medications/encounter/${enc.id}`);
+      if (r.ok) { const m = await r.json(); all.push({ ...m, _enc: enc.encounterId || enc.id }); }
+    } catch(_) {}
+  }
+  if (!all.length) { wrap.innerHTML = `<div class="empty-state"><p>No medication records found.</p></div>`; return; }
+
+  const medFields = ['insulin','metformin','glipizide','glyburide','glimepiride','pioglitazone','rosiglitazone','acarbose','miglitol','repaglinide','nateglinide','tolbutamide','tolazamide','acetohexamide','chlorpropamide','troglitazone','examide','citoglipton'];
+  const badge = v => {
+    const colors = { Up:'background:#dbeafe;color:#1d4ed8', Down:'background:#fce7f3;color:#9d174d', Steady:'background:#dcfce7;color:#15803d', No:'background:#f3f4f6;color:#6b7280' };
+    return `<span style="font-size:0.68rem;padding:0.12rem 0.45rem;border-radius:20px;font-weight:600;${colors[v]||colors['No']}">${v||'No'}</span>`;
+  };
+  const rows = all.map(m => `
+    <tr>
+      <td><small style="color:var(--green-body)">#${m._enc}</small></td>
+      ${medFields.map(f => `<td>${badge(m[f])}</td>`).join('')}
+    </tr>`).join('');
+  wrap.innerHTML = `<div style="overflow-x:auto"><table><thead><tr><th>Encounter</th>${medFields.map(f=>`<th>${f.replace(/([A-Z])/g,' $1').trim()}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+// ── Readmissions ──────────────────────────────────────────────────────────────
+async function loadReadmissions() {
+  const wrap = document.getElementById('readmissionsContent');
+  wrap.innerHTML = `<div class="empty-state"><p>Loading…</p></div>`;
+  if (!encountersData.length) {
+    try { const r = await fetch(`${API}/encounters/patient/${PATIENT_ID}`); if (r.ok) encountersData = await r.json(); } catch(_) {}
+  }
+  if (!encountersData.length) { wrap.innerHTML = `<div class="empty-state"><p>No encounters on record.</p></div>`; return; }
+
+  const cards = [];
+  for (const enc of encountersData) {
+    try {
+      const r = await fetch(`${API}/readmissions/encounter/${enc.id}`);
+      if (r.ok) { const rd = await r.json(); cards.push({ rd, enc }); }
+    } catch(_) {}
+  }
+
+  if (!cards.length) { wrap.innerHTML = `<div class="empty-state"><p>No readmission records found.</p></div>`; return; }
+
+  const riskColor = s => {
+    if (s >= 70) return '#b91c1c';
+    if (s >= 40) return '#c2410c';
+    return '#15803d';
+  };
+
+  wrap.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+    ${cards.map(({rd, enc}) => `
+      <div style="background:var(--white);border-radius:12px;padding:1.25rem;border:1px solid rgba(61,86,56,0.1);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;">
+          <span style="font-size:0.75rem;font-weight:600;color:var(--green-body);text-transform:uppercase;letter-spacing:0.05em;">Encounter #${enc.encounterId||enc.id}</span>
+          <span style="font-size:0.7rem;padding:0.2rem 0.6rem;border-radius:20px;font-weight:700;background:${rd.isReadmitted==='<30'?'#fef2f2':rd.isReadmitted==='>30'?'#fff7ed':'#dcfce7'};color:${rd.isReadmitted==='<30'?'#b91c1c':rd.isReadmitted==='>30'?'#c2410c':'#15803d'}">${rd.isReadmitted||'—'}</span>
+        </div>
+        <div style="font-family:'DM Serif Display',serif;font-size:2.5rem;color:${riskColor(rd.riskScore||0)};line-height:1;margin-bottom:0.25rem;">${rd.riskScore??'—'}</div>
+        <div style="font-size:0.72rem;color:var(--green-body);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:0.75rem;">Risk Score</div>
+        <div style="font-size:0.82rem;color:var(--green-deep);margin-bottom:0.75rem;">${rd.primaryCause||'No cause specified.'}</div>
+        <div style="font-size:0.75rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:20px;width:fit-content;${rd.followUpScheduled?'background:#dbeafe;color:#1d4ed8':'background:#f3f4f6;color:#6b7280'}">
+          Follow-up: ${rd.followUpScheduled ? 'Scheduled ✓' : 'Not scheduled'}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
