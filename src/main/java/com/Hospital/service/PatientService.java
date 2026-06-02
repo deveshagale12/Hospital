@@ -12,21 +12,40 @@ import java.util.List;
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final PatientKafkaProducer patientKafkaProducer;
 
     // Manual Constructor Injection (No Lombok)
-    public PatientService(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
-    }
+   public PatientService(PatientRepository patientRepository,
+                      PatientKafkaProducer patientKafkaProducer) {
+    this.patientRepository = patientRepository;
+    this.patientKafkaProducer = patientKafkaProducer;
+}
 
     // ── POST: Register New Patient ───────────────────────────────────────────
-    @Transactional
-    public Patient createPatient(Patient patient) {
+  //  @Transactional
+   // public Patient createPatient(Patient patient) {
         // Business Rule validation: Ensure duplicate patient numbers are caught early
-        if (patientRepository.findByPatientNbr(patient.getPatientNbr()).isPresent()) {
-            throw new RuntimeException("Patient with number " + patient.getPatientNbr() + " already exists.");
-        }
-        return patientRepository.save(patient);
+      //  if (patientRepository.findByPatientNbr(patient.getPatientNbr()).isPresent()) {
+      //      throw new RuntimeException("Patient with number " + patient.getPatientNbr() + " already exists.");
+      //  }
+      //  return patientRepository.save(patient);
+    //}
+
+    @Transactional
+public Patient createPatient(Patient patient) {
+
+    if (patientRepository.findByPatientNbr(patient.getPatientNbr()).isPresent()) {
+        throw new RuntimeException("Patient with number " + patient.getPatientNbr() + " already exists.");
     }
+
+    Patient savedPatient = patientRepository.save(patient);
+
+    if (savedPatient.getId() != null) {
+        patientKafkaProducer.sendRegistrationSuccess(savedPatient);
+    }
+
+    return savedPatient;
+}
 
     // ── GET: Retrieve All Patients ───────────────────────────────────────────
     @Transactional(readOnly = true)
